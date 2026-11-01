@@ -14,6 +14,8 @@ export function Works() {
   const grid = useRef<HTMLDivElement>(null)
   const visible = filter === ALL ? projects : projects.filter((p) => p.category === filter)
   const labels = t.works.categories as Record<string, string>
+  const wide = visible.filter((p) => !isVertical(p))
+  const tall = visible.filter(isVertical)
 
   const choose = (cat: string) => {
     if (cat === filter) return
@@ -52,17 +54,18 @@ export function Works() {
         </div>
       </div>
 
-      {/* Clips side by side, like a timeline: two across on phones, four on wide screens */}
-      <div
-        ref={grid}
-        key={filter}
-        className="container-x grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 md:gap-6 xl:grid-cols-4"
-      >
-        {visible.map((project) => (
-          <div key={project.id} className={`min-w-0 ${isVertical(project) ? '' : 'col-span-2'}`}>
-            <ProjectCard project={project} />
-          </div>
+      {/* Wide films get a row each; vertical clips sit side by side like a timeline */}
+      <div ref={grid} key={filter} className="container-x flex flex-col gap-16 md:gap-24">
+        {wide.map((project) => (
+          <ProjectCard key={project.id} project={project} />
         ))}
+        {tall.length > 0 && (
+          <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:gap-6 lg:grid-cols-4">
+            {tall.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+        )}
         {visible.length === 0 && <p className="text-muted">{t.works.empty}</p>}
       </div>
     </section>

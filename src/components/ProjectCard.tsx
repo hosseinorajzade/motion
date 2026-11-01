@@ -19,6 +19,7 @@ export function ProjectCard({ project }: { project: Project }) {
   const title = project.title[lang]
   const category = (t.works.categories as Record<string, string>)[project.category] ?? project.category
   const vertical = isVertical(project)
+  const comma = lang === 'fa' ? '، ' : ', '
 
   const play = () => {
     const v = video.current
@@ -37,9 +38,9 @@ export function ProjectCard({ project }: { project: Project }) {
         onPointerLeave={isTouch ? undefined : stop}
         onFocus={play}
         onBlur={stop}
-        className="block"
+        className={vertical ? 'block' : 'grid gap-5 md:grid-cols-12 md:items-end md:gap-8'}
       >
-        <div className={`relative overflow-hidden rounded-lg bg-line ${vertical ? 'aspect-[9/16]' : 'aspect-video'}`}>
+        <div className={`relative overflow-hidden rounded-lg bg-line ${vertical ? 'aspect-[9/16]' : 'aspect-video md:col-span-8'}`}>
           <img
             src={projectAsset(project, project.thumbnail)}
             alt=""
@@ -69,18 +70,35 @@ export function ProjectCard({ project }: { project: Project }) {
           />
         </div>
 
-        <h3 className="mt-4 font-display text-xl font-semibold leading-tight transition-colors duration-300 group-hover:text-accent md:text-2xl">
-          {title}
-        </h3>
-        <p className="mt-1 flex flex-wrap justify-between gap-x-4 text-sm text-muted">
-          <span>
-            {project.client}
-            <span className="sr-only">, </span>
-          </span>
-          <span className="shrink-0">
-            {category}, <span className="timecode">{num(project.year)}</span>
-          </span>
-        </p>
+        {vertical ? (
+          <>
+            <h3 className="mt-4 font-display text-xl font-semibold leading-tight transition-colors duration-300 group-hover:text-accent md:text-2xl">
+              {title}
+            </h3>
+            <p className="mt-1 flex flex-wrap justify-between gap-x-4 text-sm text-muted">
+              <span>
+                {project.client}
+                <span className="sr-only">, </span>
+              </span>
+              <span className="shrink-0">
+                {category}
+                {comma}
+                <span className="timecode">{num(project.year)}</span>
+              </span>
+            </p>
+          </>
+        ) : (
+          // Wide (16:9) work gets its own row: the film, with the story beside it
+          <div className="md:col-span-4 md:pb-1">
+            <h3 className="display text-[clamp(2rem,3.4vw,3.25rem)] transition-colors duration-300 group-hover:text-accent">{title}</h3>
+            <p className="mt-3 text-sm text-muted">
+              {[project.client, category].join(comma)}
+              {comma}
+              <span className="timecode">{num(project.year)}</span>
+            </p>
+            <p className="mt-5 line-clamp-4 max-w-[46ch] leading-relaxed text-paper/70">{project.description[lang]}</p>
+          </div>
+        )}
       </TransitionLink>
     </article>
   )
