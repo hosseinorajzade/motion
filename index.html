@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0a0b" />
+    <title>Your Name — Motion Designer | طراح موشن</title>
+    <meta name="description" content="Portfolio of Your Name, motion designer crafting 2D, 3D and logo animation for brands. نمونه‌کارهای طراح موشن." />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Your Name — Motion Designer" />
+    <meta property="og:title" content="Your Name — Motion Designer | طراح موشن" />
+    <meta property="og:description" content="Cinematic motion design for brands — 2D, 3D, logo animation and explainers." />
+    <meta property="og:url" content="%VITE_SITE_URL%" />
+    <meta property="og:image" content="%VITE_SITE_URL%og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="fa_IR" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Your Name — Motion Designer" />
+    <meta name="twitter:image" content="%VITE_SITE_URL%og-image.png" />
+
+    <script>
+      // Apply the saved language before first paint (no flash of wrong direction)
+      try {
+        var l = localStorage.getItem('lang')
+        if (l === 'fa') {
+          document.documentElement.lang = 'fa'
+          document.documentElement.dir = 'rtl'
+        }
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root">
+      <!-- Static loading shell: paints instantly, replaced by the React loader -->
+      <div style="position:fixed;inset:0;z-index:95;background:#0a0a0b;display:flex;align-items:flex-end;justify-content:flex-end;padding:clamp(1rem,4vw,3rem)">
+        <span style="font-family:var(--font-display);font-weight:500;letter-spacing:-0.06em;line-height:1;font-size:clamp(5rem,20vw,16rem);color:#f0ede6">0<span style="color:#ff4d2e">%</span></span>
+      </div>
+    </div>
+    <noscript>This portfolio needs JavaScript. / برای مشاهده‌ی این سایت جاوااسکریپت را فعال کنید.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

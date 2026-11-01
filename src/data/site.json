@@ -1,0 +1,40 @@
+{
+  "email": "hello@example.com",
+  "socials": {
+    "instagram": "https://instagram.com/your.handle",
+    "behance": "https://www.behance.net/yourhandle",
+    "telegram": "https://t.me/yourhandle",
+    "whatsapp": "https://wa.me/989120000000"
+  },
+  "showreel": {
+    "preview": "showreel/reel-preview.mp4",
+    "full": "showreel/reel-preview.mp4",
+    "poster": "showreel/reel-poster.jpg"
+  },
+  "portrait": "about/portrait.jpg",
+  "tools": [
+    "After Effects",
+    "Cinema 4D",
+    "Blender",
+    "Redshift",
+    "Octane",
+    "Houdini",
+    "Illustrator",
+    "Photoshop",
+    "Premiere Pro",
+    "DaVinci Resolve",
+    "Figma"
+  ],
+  "clients": [
+    "Northwind",
+    "Lumen",
+    "Atlas Studio",
+    "Kite & Co",
+    "Orbit",
+    "Halcyon",
+    "Vertex",
+    "Monolith",
+    "Parallel",
+    "Solace"
+  ]
+}

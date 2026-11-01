@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------
+   THEME — change colours here (space-separated RGB values)
+   ------------------------------------------------------------------ */
+:root {
+  --color-ink: 10 10 11; /* background  #0a0a0b */
+  --color-paper: 240 237 230; /* main text   #f0ede6 */
+  --color-muted: 140 138 133; /* secondary   #8c8a85 */
+  --color-line: 38 38 40; /* borders     #262628 */
+  --color-accent: 255 77 46; /* accent      #ff4d2e */
+
+  --font-display: 'Space Grotesk Variable', 'Inter Variable', system-ui, sans-serif;
+  --font-body: 'Inter Variable', system-ui, sans-serif;
+
+  --gutter: clamp(1rem, 4vw, 3rem);
+  color-scheme: dark;
+}
+
+html[lang='fa'] {
+  --font-display: 'Vazirmatn Variable', Tahoma, sans-serif;
+  --font-body: 'Vazirmatn Variable', Tahoma, sans-serif;
+}
+
+@layer base {
+  html {
+    @apply bg-ink text-paper antialiased;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply min-h-screen overflow-x-hidden bg-ink font-body;
+  }
+  ::selection {
+    @apply bg-accent text-ink;
+  }
+  :focus-visible {
+    @apply outline outline-2 outline-offset-4 outline-accent;
+  }
+  img,
+  video {
+    @apply block max-w-full;
+  }
+  /* Persian glyphs need a little more vertical room */
+  html[lang='fa'] .display {
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-[1600px];
+    padding-inline: var(--gutter);
+  }
+  .display {
+    @apply font-display font-medium leading-[0.92] tracking-tightest;
+  }
+  .eyebrow {
+    @apply flex items-center gap-3 font-body text-xs uppercase tracking-[0.2em] text-muted;
+  }
+  html[lang='fa'] .eyebrow {
+    @apply text-sm tracking-normal;
+  }
+  .eyebrow::before {
+    content: '';
+    @apply inline-block h-1.5 w-1.5 rounded-full bg-accent;
+  }
+  .link-underline {
+    @apply relative;
+  }
+  .link-underline::after {
+    content: '';
+    @apply absolute -bottom-0.5 h-px w-full origin-right scale-x-0 bg-current transition-transform duration-700 ease-expo;
+    inset-inline-start: 0;
+  }
+  [dir='rtl'] .link-underline::after {
+    @apply origin-left;
+  }
+  .link-underline:hover::after {
+    @apply origin-left scale-x-100;
+  }
+  [dir='rtl'] .link-underline:hover::after {
+    @apply origin-right;
+  }
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Custom cursor: hide the native one only on precise pointers */
+@media (hover: hover) and (pointer: fine) {
+  html.has-cursor,
+  html.has-cursor * {
+    cursor: none !important;
+  }
+}
+
+/* Film grain */
+.grain {
+  position: fixed;
+  inset: -100%;
+  width: 300%;
+  height: 300%;
+  pointer-events: none;
+  z-index: 80;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 0.9s steps(6) infinite;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-6%, 4%); }
+  40% { transform: translate(4%, -8%); }
+  60% { transform: translate(-9%, -3%); }
+  80% { transform: translate(7%, 6%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Marquee */
+.marquee-track {
+  animation: marquee var(--marquee-duration, 40s) linear infinite;
+}
+.marquee-track.reverse {
+  animation-direction: reverse;
+}
+[dir='rtl'] .marquee-track {
+  animation-direction: reverse;
+}
+[dir='rtl'] .marquee-track.reverse {
+  animation-direction: normal;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.text-outline {
+  -webkit-text-stroke: 1px rgb(var(--color-paper) / 0.35);
+  color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .grain {
+    animation: none;
+  }
+}
+
+@keyframes scrollcue {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(200%); }
+}

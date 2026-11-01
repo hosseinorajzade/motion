@@ -1,0 +1,50 @@
+[
+  {
+    "id": "neon-drift",
+    "title": { "en": "Neon Drift", "fa": "رانش نئون" },
+    "description": {
+      "en": "A 3D brand film for an electric mobility startup. We built a world of liquid light and glass to express speed without noise — every shot was designed as a seamless loop for social cut-downs.",
+      "fa": "فیلم برند سه‌بعدی برای یک استارتاپ حمل‌ونقل برقی. دنیایی از نور مایع و شیشه ساختیم تا سرعت را بدون شلوغی نشان دهیم؛ هر نما به صورت لوپ بی‌درز برای نسخه‌های شبکه‌های اجتماعی طراحی شد."
+    },
+    "client": "Orbit Mobility",
+    "year": 2026,
+    "category": "3D",
+    "tools": ["Cinema 4D", "Redshift", "After Effects"],
+    "thumbnail": "thumb.jpg",
+    "previewVideo": "preview.mp4",
+    "fullVideo": "preview.mp4",
+    "gallery": ["still-1.jpg", "still-2.jpg", "still-3.jpg"]
+  },
+  {
+    "id": "pulse-identity",
+    "title": { "en": "Pulse Identity", "fa": "هویت پالس" },
+    "description": {
+      "en": "Logo animation and motion guidelines for a music streaming brand. The mark breathes to a 120 BPM grid, giving every touchpoint — from app splash to billboard — the same heartbeat.",
+      "fa": "لوگوموشن و راهنمای حرکتی برای یک برند استریم موسیقی. نشان روی گرید ۱۲۰ ضرب در دقیقه نفس می‌کشد تا همه‌ی نقاط تماس — از صفحه‌ی شروع اپ تا بیلبورد — یک ضربان داشته باشند."
+    },
+    "client": "Pulse Music",
+    "year": 2025,
+    "category": "Logo Animation",
+    "tools": ["After Effects", "Illustrator"],
+    "thumbnail": "thumb.jpg",
+    "previewVideo": "preview.mp4",
+    "fullVideo": "https://vimeo.com/76979871",
+    "gallery": ["still-1.jpg", "still-2.jpg", "still-3.jpg"]
+  },
+  {
+    "id": "paper-city",
+    "title": { "en": "Paper City", "fa": "شهر کاغذی" },
+    "description": {
+      "en": "A 90-second 2D explainer for a fintech app. Flat, paper-cut characters guide the viewer through saving, investing and sending money in a single continuous camera move.",
+      "fa": "اکسپلینر دوبعدی ۹۰ ثانیه‌ای برای یک اپ مالی. شخصیت‌های کاغذی و تخت، بیننده را در یک حرکت پیوسته‌ی دوربین از پس‌انداز تا سرمایه‌گذاری و انتقال پول همراهی می‌کنند."
+    },
+    "client": "Kite Finance",
+    "year": 2024,
+    "category": "Explainer",
+    "tools": ["After Effects", "Illustrator", "Premiere Pro"],
+    "thumbnail": "thumb.jpg",
+    "previewVideo": "preview.mp4",
+    "fullVideo": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+    "gallery": ["still-1.jpg", "still-2.jpg", "still-3.jpg"]
+  }
+]
