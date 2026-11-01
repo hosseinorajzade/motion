@@ -47,13 +47,32 @@ export const LazyVideo = forwardRef<HTMLVideoElement, LazyVideoProps>(function L
 })
 
 /** Player with a lightweight facade: nothing heavy loads until the visitor presses play. */
-export function VideoPlayer({ url, poster, title, autoStart = false, resolve }: { url: string; poster?: string; title: string; autoStart?: boolean; resolve?: (f: string) => string }) {
+export function VideoPlayer({
+  url,
+  poster,
+  title,
+  autoStart = false,
+  vertical = false,
+  resolve,
+}: {
+  url: string
+  poster?: string
+  title: string
+  autoStart?: boolean
+  /** 9:16 frame that fits the viewport height */
+  vertical?: boolean
+  resolve?: (f: string) => string
+}) {
   const { t } = useLanguage()
   const [active, setActive] = useState(autoStart)
   const source: VideoSource = parseVideo(url, resolve)
 
   return (
-    <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-line/50">
+    <div
+      className={`relative overflow-hidden rounded-xl bg-line/50 ${
+        vertical ? 'mx-auto aspect-[9/16] w-full max-w-[calc(85svh*9/16)]' : 'aspect-video w-full'
+      }`}
+    >
       {active ? (
         source.kind === 'file' ? (
           <video src={source.src} poster={poster} controls autoPlay playsInline className="h-full w-full bg-black object-contain" />

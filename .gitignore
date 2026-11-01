@@ -4,3 +4,6 @@ dist
 .DS_Store
 .vscode/*
 !.vscode/extensions.json
+
+# Source videos (compressed copies live in public/projects)
+Motions/

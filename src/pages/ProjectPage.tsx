@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { gsap } from '../lib/gsap'
 import { useLanguage } from '../i18n/LanguageContext'
 import { useSeo } from '../hooks/useSeo'
-import { getNextProject, getProject, projectAsset } from '../data/projects'
+import { getNextProject, getProject, isVertical, projectAsset } from '../data/projects'
 import { RevealText } from '../components/RevealText'
 import { TransitionLink } from '../components/Transition'
 import { VideoPlayer } from '../components/Video'
@@ -26,6 +26,7 @@ function ProjectDetail({ id }: { id: string }) {
   const title = project.title[lang]
   const category = (t.works.categories as Record<string, string>)[project.category] ?? project.category
   const resolve = (file: string) => projectAsset(project, file)
+  const vertical = isVertical(project)
   useSeo(t.meta.projectTitle.replace('{project}', title), project.description[lang])
 
   useLayoutEffect(() => {
@@ -70,7 +71,7 @@ function ProjectDetail({ id }: { id: string }) {
 
       {project.fullVideo && (
         <div data-player className="container-x mt-16 md:mt-24">
-          <VideoPlayer url={project.fullVideo} resolve={resolve} poster={resolve(project.thumbnail)} title={title} />
+          <VideoPlayer url={project.fullVideo} resolve={resolve} poster={resolve(project.thumbnail)} title={title} vertical={vertical} />
         </div>
       )}
 
@@ -81,15 +82,15 @@ function ProjectDetail({ id }: { id: string }) {
       {project.gallery.length > 0 && (
         <section className="container-x mt-24 md:mt-40" aria-label={t.project.gallery}>
           <h2 className="eyebrow mb-8">{t.project.gallery}</h2>
-          <div className="grid gap-4 md:grid-cols-2 md:gap-6">
+          <div className={`grid gap-4 md:gap-6 ${vertical ? 'grid-cols-2 md:grid-cols-3' : 'md:grid-cols-2'}`}>
             {project.gallery.map((file, i) => (
-              <div key={file} data-still className={`overflow-hidden rounded-2xl bg-line ${i % 3 === 0 ? 'md:col-span-2' : ''}`}>
+              <div key={file} data-still className={`overflow-hidden rounded-2xl bg-line ${!vertical && i % 3 === 0 ? 'md:col-span-2' : ''}`}>
                 <img
                   src={resolve(file)}
                   alt={`${title} — ${num(i + 1)}`}
                   loading="lazy"
                   decoding="async"
-                  className={`w-full object-cover ${i % 3 === 0 ? 'aspect-video' : 'aspect-[4/3]'}`}
+                  className={`w-full object-cover ${vertical ? 'aspect-[9/16]' : i % 3 === 0 ? 'aspect-video' : 'aspect-[4/3]'}`}
                 />
               </div>
             ))}

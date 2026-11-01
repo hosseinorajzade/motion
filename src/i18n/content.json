@@ -37,7 +37,7 @@
     "showreel": {
       "eyebrow": "Showreel 2026",
       "title": "Watch the reel",
-      "hint": "Click to play with sound"
+      "hint": "Click to watch"
     },
     "works": {
       "eyebrow": "Selected works",
@@ -46,8 +46,10 @@
       "count": "projects",
       "empty": "No projects in this category yet.",
       "categories": {
-        "2D": "2D",
         "3D": "3D",
+        "2D": "2D",
+        "Typography": "Typography",
+        "Commercial": "Commercial",
         "Logo Animation": "Logo Animation",
         "Explainer": "Explainer"
       }
@@ -73,20 +75,44 @@
       "photoAlt": "Portrait of Your Name",
       "toolsTitle": "Tools I use",
       "stats": [
-        { "value": "10+", "label": "Years of experience" },
-        { "value": "150+", "label": "Projects delivered" },
-        { "value": "40+", "label": "Brands" }
+        {
+          "value": "10+",
+          "label": "Years of experience"
+        },
+        {
+          "value": "150+",
+          "label": "Projects delivered"
+        },
+        {
+          "value": "40+",
+          "label": "Brands"
+        }
       ]
     },
     "services": {
       "eyebrow": "Services",
       "title": "What I can do for you",
       "items": [
-        { "title": "Brand & Logo Animation", "description": "Animated logos, idents and motion systems that give your brand a consistent, memorable rhythm." },
-        { "title": "3D Motion & Product Films", "description": "Photoreal or stylised 3D for product launches, abstract loops and campaign key visuals." },
-        { "title": "Explainer Videos", "description": "Clear, character-driven 2D stories that make complex products easy to understand." },
-        { "title": "Social & Ad Content", "description": "Scroll-stopping vertical and square edits, built for Instagram, TikTok and paid campaigns." },
-        { "title": "Title Design & Broadcast", "description": "Opening titles, lower thirds and broadcast packages for film, TV and events." }
+        {
+          "title": "Brand & Logo Animation",
+          "description": "Animated logos, idents and motion systems that give your brand a consistent, memorable rhythm."
+        },
+        {
+          "title": "3D Motion & Product Films",
+          "description": "Photoreal or stylised 3D for product launches, abstract loops and campaign key visuals."
+        },
+        {
+          "title": "Explainer Videos",
+          "description": "Clear, character-driven 2D stories that make complex products easy to understand."
+        },
+        {
+          "title": "Social & Ad Content",
+          "description": "Scroll-stopping vertical and square edits, built for Instagram, TikTok and paid campaigns."
+        },
+        {
+          "title": "Title Design & Broadcast",
+          "description": "Opening titles, lower thirds and broadcast packages for film, TV and events."
+        }
       ]
     },
     "clients": {
@@ -152,7 +178,7 @@
     "showreel": {
       "eyebrow": "شوریل ۱۴۰۵",
       "title": "شوریل را ببینید",
-      "hint": "برای پخش با صدا کلیک کنید"
+      "hint": "برای تماشا کلیک کنید"
     },
     "works": {
       "eyebrow": "نمونه‌کارهای منتخب",
@@ -161,8 +187,10 @@
       "count": "پروژه",
       "empty": "هنوز پروژه‌ای در این دسته نیست.",
       "categories": {
-        "2D": "دوبعدی",
         "3D": "سه‌بعدی",
+        "2D": "دوبعدی",
+        "Typography": "تایپوگرافی",
+        "Commercial": "تبلیغاتی",
         "Logo Animation": "لوگوموشن",
         "Explainer": "اکسپلینر"
       }
@@ -188,20 +216,44 @@
       "photoAlt": "پرتره‌ی نام شما",
       "toolsTitle": "ابزارهای من",
       "stats": [
-        { "value": "+۱۰", "label": "سال تجربه" },
-        { "value": "+۱۵۰", "label": "پروژه‌ی تحویل‌شده" },
-        { "value": "+۴۰", "label": "برند" }
+        {
+          "value": "+۱۰",
+          "label": "سال تجربه"
+        },
+        {
+          "value": "+۱۵۰",
+          "label": "پروژه‌ی تحویل‌شده"
+        },
+        {
+          "value": "+۴۰",
+          "label": "برند"
+        }
       ]
     },
     "services": {
       "eyebrow": "خدمات",
       "title": "چه کاری برایتان انجام می‌دهم",
       "items": [
-        { "title": "لوگوموشن و هویت حرکتی", "description": "لوگوی متحرک، آیدنت و سیستم حرکتی که به برند شما ریتمی یکپارچه و ماندگار می‌دهد." },
-        { "title": "موشن سه‌بعدی و فیلم محصول", "description": "سه‌بعدی واقع‌گرایانه یا استایلایز برای معرفی محصول، لوپ‌های انتزاعی و کمپین‌ها." },
-        { "title": "ویدیوی اکسپلینر", "description": "داستان‌های دوبعدی شفاف و شخصیت‌محور که محصولات پیچیده را ساده توضیح می‌دهند." },
-        { "title": "محتوای شبکه‌های اجتماعی و تبلیغات", "description": "ویدیوهای عمودی و مربعی چشم‌گیر برای اینستاگرام، تیک‌تاک و کمپین‌های تبلیغاتی." },
-        { "title": "تیتراژ و برادکست", "description": "تیتراژ آغازین، زیرنویس‌های گرافیکی و پکیج برادکست برای فیلم، تلویزیون و رویدادها." }
+        {
+          "title": "لوگوموشن و هویت حرکتی",
+          "description": "لوگوی متحرک، آیدنت و سیستم حرکتی که به برند شما ریتمی یکپارچه و ماندگار می‌دهد."
+        },
+        {
+          "title": "موشن سه‌بعدی و فیلم محصول",
+          "description": "سه‌بعدی واقع‌گرایانه یا استایلایز برای معرفی محصول، لوپ‌های انتزاعی و کمپین‌ها."
+        },
+        {
+          "title": "ویدیوی اکسپلینر",
+          "description": "داستان‌های دوبعدی شفاف و شخصیت‌محور که محصولات پیچیده را ساده توضیح می‌دهند."
+        },
+        {
+          "title": "محتوای شبکه‌های اجتماعی و تبلیغات",
+          "description": "ویدیوهای عمودی و مربعی چشم‌گیر برای اینستاگرام، تیک‌تاک و کمپین‌های تبلیغاتی."
+        },
+        {
+          "title": "تیتراژ و برادکست",
+          "description": "تیتراژ آغازین، زیرنویس‌های گرافیکی و پکیج برادکست برای فیلم، تلویزیون و رویدادها."
+        }
       ]
     },
     "clients": {

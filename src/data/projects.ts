@@ -11,6 +11,8 @@ export interface Project {
   year: number
   category: string
   tools: string[]
+  /** "vertical" for 9:16 work (Reels, Stories); defaults to horizontal 16:9 */
+  orientation?: 'vertical' | 'horizontal'
   /** File name inside public/projects/<id>/ or a full https:// URL */
   thumbnail: string
   previewVideo?: string
@@ -22,6 +24,8 @@ export interface Project {
 export const projects = raw as Project[]
 
 export const categories = Array.from(new Set(projects.map((p) => p.category)))
+
+export const isVertical = (p: Project) => p.orientation === 'vertical'
 
 export function getProject(id: string | undefined) {
   return projects.find((p) => p.id === id)

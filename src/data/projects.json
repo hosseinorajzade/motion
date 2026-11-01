@@ -1,50 +1,70 @@
 [
   {
-    "id": "neon-drift",
-    "title": { "en": "Neon Drift", "fa": "رانش نئون" },
+    "id": "daewoo-charisma",
+    "title": { "en": "Daewoo Charisma", "fa": "دوو کاریزما" },
     "description": {
-      "en": "A 3D brand film for an electric mobility startup. We built a world of liquid light and glass to express speed without noise — every shot was designed as a seamless loop for social cut-downs.",
-      "fa": "فیلم برند سه‌بعدی برای یک استارتاپ حمل‌ونقل برقی. دنیایی از نور مایع و شیشه ساختیم تا سرعت را بدون شلوغی نشان دهیم؛ هر نما به صورت لوپ بی‌درز برای نسخه‌های شبکه‌های اجتماعی طراحی شد."
+      "en": "Launch teaser for the Daewoo Charisma washing machine. Neon-lit product shots and close-ups walk through the key features — A+++ energy grade, seven wash modes, Jet Shower and a 9 kg drum — with bilingual Persian and English typography, ending on the brand mark.",
+      "fa": "تیزر معرفی ماشین لباسشویی دوو کاریزما. نماهای محصول در نور نئون و کلوزآپ‌ها ویژگی‌های اصلی را نشان می‌دهند — گرید انرژی +++A، هفت حالت شستشو، جت شاور و ظرفیت ۹ کیلوگرم — با تایپوگرافی دوزبانه‌ی فارسی و انگلیسی و پایانی روی لوگوی برند."
     },
-    "client": "Orbit Mobility",
+    "client": "Daewoo",
     "year": 2026,
     "category": "3D",
     "tools": ["Cinema 4D", "Redshift", "After Effects"],
+    "orientation": "vertical",
     "thumbnail": "thumb.jpg",
     "previewVideo": "preview.mp4",
-    "fullVideo": "preview.mp4",
+    "fullVideo": "full.mp4",
     "gallery": ["still-1.jpg", "still-2.jpg", "still-3.jpg"]
   },
   {
-    "id": "pulse-identity",
-    "title": { "en": "Pulse Identity", "fa": "هویت پالس" },
+    "id": "art-and-walk",
+    "title": { "en": "Art & Walk", "fa": "آرت اند واک" },
     "description": {
-      "en": "Logo animation and motion guidelines for a music streaming brand. The mark breathes to a 120 BPM grid, giving every touchpoint — from app splash to billboard — the same heartbeat.",
-      "fa": "لوگوموشن و راهنمای حرکتی برای یک برند استریم موسیقی. نشان روی گرید ۱۲۰ ضرب در دقیقه نفس می‌کشد تا همه‌ی نقاط تماس — از صفحه‌ی شروع اپ تا بیلبورد — یک ضربان داشته باشند."
+      "en": "Kinetic-typography launch film for Art & Walk, a community by Art Radar that explores Dubai's art scene on foot. Bold type, soft colour fields and map graphics introduce the idea — art, our common language — and the first route through five galleries on Alserkal Avenue.",
+      "fa": "فیلم معرفی با تایپوگرافی متحرک برای «آرت اند واک»، جامعه‌ای از آرت رادار برای کشف پیاده‌ی فضای هنری دبی. تایپ درشت، رنگ‌های نرم و گرافیک نقشه، ایده‌ی «هنر، زبان مشترک ما» و اولین مسیر از میان پنج گالری در خیابان السرکال را معرفی می‌کنند."
     },
-    "client": "Pulse Music",
-    "year": 2025,
-    "category": "Logo Animation",
+    "client": "Art Radar",
+    "year": 2026,
+    "category": "Typography",
     "tools": ["After Effects", "Illustrator"],
+    "orientation": "vertical",
     "thumbnail": "thumb.jpg",
     "previewVideo": "preview.mp4",
-    "fullVideo": "https://vimeo.com/76979871",
+    "fullVideo": "full.mp4",
     "gallery": ["still-1.jpg", "still-2.jpg", "still-3.jpg"]
   },
   {
-    "id": "paper-city",
-    "title": { "en": "Paper City", "fa": "شهر کاغذی" },
+    "id": "alserkal-walk",
+    "title": { "en": "Alserkal Avenue Walk", "fa": "پیاده‌روی السرکال" },
     "description": {
-      "en": "A 90-second 2D explainer for a fintech app. Flat, paper-cut characters guide the viewer through saving, investing and sending money in a single continuous camera move.",
-      "fa": "اکسپلینر دوبعدی ۹۰ ثانیه‌ای برای یک اپ مالی. شخصیت‌های کاغذی و تخت، بیننده را در یک حرکت پیوسته‌ی دوربین از پس‌انداز تا سرمایه‌گذاری و انتقال پول همراهی می‌کنند."
+      "en": "Event invitation for an Art Radar gallery walk in cooperation with Vin.meet. Live footage of Alserkal Avenue blends into an animated isometric map that traces the route between The Third Line, Leila Heller, Efie, Carbon 12 and more — closing on the date, the meeting point and a call to register.",
+      "fa": "دعوت‌نامه‌ی ویدیویی برای پیاده‌روی گالری‌گردی آرت رادار با همکاری Vin.meet. تصاویر واقعی خیابان السرکال به نقشه‌ی ایزومتریک متحرکی می‌رسند که مسیر میان گالری‌های تِرد لاین، لیلا هلر، افی، کربن ۱۲ و دیگران را دنبال می‌کند و با تاریخ، محل قرار و دعوت به ثبت‌نام تمام می‌شود."
     },
-    "client": "Kite Finance",
-    "year": 2024,
-    "category": "Explainer",
-    "tools": ["After Effects", "Illustrator", "Premiere Pro"],
+    "client": "Art Radar × Vin.meet",
+    "year": 2026,
+    "category": "2D",
+    "tools": ["After Effects", "Illustrator"],
+    "orientation": "vertical",
     "thumbnail": "thumb.jpg",
     "previewVideo": "preview.mp4",
-    "fullVideo": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+    "fullVideo": "full.mp4",
+    "gallery": ["still-1.jpg", "still-2.jpg", "still-3.jpg"]
+  },
+  {
+    "id": "social-cafe",
+    "title": { "en": "Social Café", "fa": "سوشال کافه" },
+    "description": {
+      "en": "A short social ad for Social Café. A floating iced coffee waits in a sunlit cobblestone alley until a passing runner grabs it mid-stride — a ten-second loop built for Reels and Stories.",
+      "fa": "تبلیغ کوتاه شبکه‌های اجتماعی برای سوشال کافه. یک آیس‌کافی معلق در کوچه‌ای سنگ‌فرش و آفتابی منتظر است تا دونده‌ای در حال دویدن آن را بردارد — لوپی ده‌ثانیه‌ای برای ریلز و استوری."
+    },
+    "client": "Social Café",
+    "year": 2026,
+    "category": "Commercial",
+    "tools": ["After Effects"],
+    "orientation": "vertical",
+    "thumbnail": "thumb.jpg",
+    "previewVideo": "preview.mp4",
+    "fullVideo": "full.mp4",
     "gallery": ["still-1.jpg", "still-2.jpg", "still-3.jpg"]
   }
 ]

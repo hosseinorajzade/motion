@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { useLanguage } from '../i18n/LanguageContext'
-import { projectAsset, type Project } from '../data/projects'
+import { isVertical, projectAsset, type Project } from '../data/projects'
 import { TransitionLink } from './Transition'
 import { LazyVideo } from './Video'
 import { ArrowUpRightIcon } from './Icons'
@@ -15,6 +15,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
   const autoPreview = isTouch && getPerformanceTier() === 'high'
   const title = project.title[lang]
   const category = (t.works.categories as Record<string, string>)[project.category] ?? project.category
+  const vertical = isVertical(project)
 
   const play = () => {
     const v = video.current
@@ -35,14 +36,14 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
         onBlur={stop}
         className="block"
       >
-        <div data-card-media className="relative aspect-[4/3] overflow-hidden rounded-xl bg-line md:rounded-2xl">
+        <div data-card-media className={`relative ${vertical ? 'aspect-[4/5]' : 'aspect-[4/3]'} overflow-hidden rounded-xl bg-line md:rounded-2xl`}>
           <img
             src={projectAsset(project, project.thumbnail)}
             alt=""
             loading="lazy"
             decoding="async"
-            width={960}
-            height={720}
+            width={vertical ? 720 : 960}
+            height={vertical ? 900 : 720}
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1.4s] ease-expo group-hover:scale-105"
           />
           {project.previewVideo && (
