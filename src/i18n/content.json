@@ -49,7 +49,8 @@
         "Typography": "Typography",
         "Commercial": "Commercial",
         "Logo Animation": "Logo Animation",
-        "Explainer": "Explainer"
+        "Explainer": "Explainer",
+        "UI Animation": "UI animation"
       },
       "filterLabel": "Filter by category"
     },
@@ -171,7 +172,8 @@
         "Typography": "تایپوگرافی",
         "Commercial": "تبلیغاتی",
         "Logo Animation": "لوگوموشن",
-        "Explainer": "اکسپلینر"
+        "Explainer": "اکسپلینر",
+        "UI Animation": "موشن رابط کاربری"
       },
       "filterLabel": "فیلتر بر اساس دسته"
     },

@@ -1,5 +1,33 @@
 [
   {
+    "id": "tessel",
+    "title": {
+      "en": "Tessel",
+      "fa": "تسل"
+    },
+    "description": {
+      "en": "Launch film for Tessel, “the calendar that plans itself.” It opens on an overbooked schedule — “Your week doesn't fit” — then shows the product at work: a single prompt protects your mornings and moves meetings, overruns slot in without breaking the day, and the week resolves into “Everything fits.”",
+      "fa": "فیلم معرفی «تسل»، «تقویمی که خودش برنامه‌ریزی می‌کند». فیلم با یک برنامه‌ی شلوغ شروع می‌شود — «هفته‌ات جا نمی‌شود» — و بعد محصول را در عمل نشان می‌دهد: یک درخواست ساده صبح‌ها را آزاد نگه می‌دارد و جلسه‌ها را جابه‌جا می‌کند، کارهای طولانی‌تر از برنامه بدون به‌هم‌ریختن روز جا می‌گیرند و هفته به «همه‌چیز جا می‌شود» می‌رسد."
+    },
+    "client": "Tessel",
+    "year": 2026,
+    "category": "UI Animation",
+    "tools": [
+      "After Effects",
+      "Figma"
+    ],
+    "duration": 33,
+    "thumbnail": "thumb.jpg",
+    "previewVideo": "preview.mp4",
+    "fullVideo": "full.mp4",
+    "gallery": [
+      "still-1.jpg",
+      "still-2.jpg",
+      "still-3.jpg",
+      "still-4.jpg"
+    ]
+  },
+  {
     "id": "daewoo-charisma",
     "title": {
       "en": "Daewoo Charisma",
