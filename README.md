@@ -130,6 +130,12 @@ Notes:
 
 ---
 
+## 5. Films made in code (`remotion/`)
+
+The showreel, the **Anar** logo animation and the **Tact 75** keyboard teaser are built with [Remotion](https://www.remotion.dev) in the `remotion/` folder: picture in React and three.js, sound synthesised in Python, delivery encoded with ffmpeg. See [`remotion/README.md`](remotion/README.md) for how to preview, change and re-render them. That folder is not part of the website build.
+
+---
+
 ## Project structure
 
 ```
@@ -239,6 +245,10 @@ npm run preview    # نمایش نسخه‌ی نهایی
 از آن به بعد، هر push روی `main` سایت را به‌صورت خودکار به‌روز می‌کند. مسیر پایه (`base`) هم خودکار از نام مخزن ساخته می‌شود.
 
 > اگر نام مخزن `<نام-کاربری>.github.io` است، مقدار `BASE_PATH` را در فایل workflow برابر `/` قرار دهید.
+
+### ۵. فیلم‌های ساخته‌شده با کد (پوشه‌ی `remotion`)
+
+شوریل، انیمیشن لوگوی **انار** و تیزر کیبورد **تکت ۷۵** با [Remotion](https://www.remotion.dev) در پوشه‌ی `remotion/` ساخته شده‌اند: تصویر با React و three.js، صدا و موسیقی با Python و خروجی نهایی با ffmpeg. روش پیش‌نمایش، تغییر و رندر دوباره در فایل [`remotion/README.md`](remotion/README.md) آمده است. این پوشه بخشی از build سایت نیست.
 
 رسانه‌های فعلی پروژه نمونه و موقت هستند. آن‌ها را با کارهای خودتان جایگزین کنید.
 
