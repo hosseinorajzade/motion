@@ -3,15 +3,24 @@ import { useLanguage } from '../i18n/LanguageContext'
 import { RevealText } from '../components/RevealText'
 import { Magnetic } from '../components/Magnetic'
 import { useSmoothScroll } from '../components/SmoothScroll'
-import { ArrowUpIcon, ArrowUpRightIcon, BehanceIcon, InstagramIcon, MailIcon, TelegramIcon, WhatsAppIcon } from '../components/Icons'
+import { ArrowUpIcon, ArrowUpRightIcon, BehanceIcon, InstagramIcon, MailIcon, PhoneIcon, TelegramIcon, WhatsAppIcon } from '../components/Icons'
 import site from '../data/site.json'
 
-const socials: { key: keyof typeof site.socials; Icon: ComponentType<SVGProps<SVGSVGElement>> }[] = [
+const allSocials: { key: keyof typeof site.socials; Icon: ComponentType<SVGProps<SVGSVGElement>> }[] = [
   { key: 'instagram', Icon: InstagramIcon },
   { key: 'behance', Icon: BehanceIcon },
   { key: 'telegram', Icon: TelegramIcon },
   { key: 'whatsapp', Icon: WhatsAppIcon },
 ]
+// Links left empty in site.json are hidden
+const socials = allSocials.filter(({ key }) => site.socials[key])
+
+/** +989134432736 -> "+98 913 443 2736" (en) or "۰۹۱۳ ۴۴۳ ۲۷۳۶" (fa) */
+function formatPhone(phone: string, lang: string) {
+  const local = phone.replace(/^\+98/, '')
+  const groups = [local.slice(0, 3), local.slice(3, 6), local.slice(6)]
+  return lang === 'fa' ? ['0' + groups[0], ...groups.slice(1)].join(' ') : ['+98', ...groups].join(' ')
+}
 
 export function Contact() {
   const { t, lang, num } = useLanguage()
@@ -24,6 +33,7 @@ export function Contact() {
         <p className="mt-8 max-w-lg text-lg text-paper/70">{t.contact.subtitle}</p>
 
         <div className="mt-16 flex flex-col gap-12 md:mt-24 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col items-start gap-6">
           <Magnetic strength={0.25}>
             <a
               href={`mailto:${site.email}`}
@@ -40,7 +50,18 @@ export function Contact() {
               </span>
             </a>
           </Magnetic>
+          {site.phone && (
+            <a href={`tel:${site.phone}`} className="group flex items-center gap-3 ps-2 md:ps-4">
+              <PhoneIcon className="h-5 w-5 text-accent" />
+              <span className="text-sm text-muted">{t.contact.phoneLabel}</span>
+              <span className="link-underline timecode text-lg" dir="ltr">
+                {num(formatPhone(site.phone, lang))}
+              </span>
+            </a>
+          )}
+          </div>
 
+          {socials.length > 0 && (
           <div>
             <h3 className="mb-4 text-sm text-muted">{t.contact.socialTitle}</h3>
             <ul className="flex flex-wrap gap-3">
@@ -62,6 +83,7 @@ export function Contact() {
               ))}
             </ul>
           </div>
+          )}
         </div>
       </div>
 

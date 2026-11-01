@@ -109,7 +109,8 @@
       "instagram": "Instagram",
       "behance": "Behance",
       "telegram": "Telegram",
-      "whatsapp": "WhatsApp"
+      "whatsapp": "WhatsApp",
+      "phoneLabel": "Or call"
     },
     "footer": {
       "rights": "All rights reserved.",
@@ -230,7 +231,8 @@
       "instagram": "اینستاگرام",
       "behance": "بیهنس",
       "telegram": "تلگرام",
-      "whatsapp": "واتس‌اپ"
+      "whatsapp": "واتس‌اپ",
+      "phoneLabel": "یا تماس بگیرید"
     },
     "footer": {
       "rights": "تمامی حقوق محفوظ است.",
