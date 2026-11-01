@@ -1,0 +1,17 @@
+{
+  "name": "carpal-tunnel-explainer",
+  "private": true,
+  "version": "1.0.0",
+  "description": "40 s 9:16 motion-graphics explainer about carpal tunnel syndrome (Persian), rendered frame by frame from one HTML page.",
+  "scripts": {
+    "serve": "python3 -m http.server 8080",
+    "stills": "node render/render.cjs --stills 2,9.5,15.6,20.4,27.9,36.6",
+    "check": "node render/render.cjs --check",
+    "frames": "node render/render.cjs --workers 3 --resume",
+    "encode": "bash render/encode.sh",
+    "render": "npm run frames && npm run encode"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  }
+}

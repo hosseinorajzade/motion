@@ -1,0 +1,1720 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>سندروم تونل کارپال</title>
+<!--
+  Carpal tunnel syndrome, a 40 s 9:16 explainer.
+  One page: GSAP timeline (no ScrollTrigger) + three.js (UnrealBloomPass) + GPU particles.
+  Everything is a pure function of time: window.renderFrame(t) seeks the timeline,
+  seeks the clips, updates the scene and renders it. Open with ?render=1 for the
+  frame-by-frame renderer (render/render.cjs); without it the page plays itself.
+  Serve the folder over HTTP (e.g. `python3 -m http.server`), not file://.
+-->
+<style>
+@font-face {
+  font-family: 'Vazirmatn';
+  font-style: normal;
+  font-display: block;
+  font-weight: 100 900;
+  src: url(assets/fonts/vazirmatn-arabic-wght-normal.woff2) format('woff2-variations');
+  unicode-range: U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0898-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC;
+}
+@font-face {
+  font-family: 'Vazirmatn';
+  font-style: normal;
+  font-display: block;
+  font-weight: 100 900;
+  src: url(assets/fonts/vazirmatn-latin-wght-normal.woff2) format('woff2-variations');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+:root {
+  --teal: #2ef0dc;
+  --teal-soft: rgba(46, 240, 220, .38);
+  --red: #ff3d57;
+  --red-soft: rgba(255, 61, 87, .4);
+  --ink: #eef7f7;
+  --ink-2: rgba(238, 247, 247, .74);
+  --bg: #04070a;
+  --panel: rgba(5, 11, 15, .74);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+body { font-family: 'Vazirmatn', system-ui, sans-serif; }
+
+#stage {
+  position: absolute; left: 0; top: 0;
+  width: 1080px; height: 1920px;
+  transform-origin: 0 0;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Vazirmatn', sans-serif;
+  font-feature-settings: "ss01" 0;
+  -webkit-font-smoothing: antialiased;
+}
+#gl { position: absolute; inset: 0; width: 1080px; height: 1920px; display: block; }
+#ui { position: absolute; inset: 0; pointer-events: none; }
+#ui > * { position: absolute; }
+svg { overflow: visible; }
+
+/* words: one inline-block per word, never per letter, so Persian joins stay intact */
+.w { display: inline-block; white-space: nowrap; transform-origin: 50% 60%; }
+.kt { margin: 0; }
+
+.teal { color: var(--teal); text-shadow: 0 0 26px rgba(46, 240, 220, .32), 0 3px 26px rgba(0, 0, 0, .55); }
+.red { color: var(--red); text-shadow: 0 0 26px rgba(255, 61, 87, .35), 0 3px 26px rgba(0, 0, 0, .55); }
+
+.eyebrow {
+  display: flex; align-items: center; gap: 16px;
+  font-size: 34px; font-weight: 700; color: var(--teal);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, .6);
+}
+.eyebrow .bar { display: inline-block; width: 64px; height: 3px; background: currentColor; border-radius: 2px; transform-origin: 100% 50%; }
+.eyebrow.redish { color: var(--red); }
+
+.title { font-size: 108px; font-weight: 850; line-height: 1.12; text-shadow: 0 4px 34px rgba(0, 0, 0, .6); }
+.sub { font-size: 42px; font-weight: 450; line-height: 1.55; color: var(--ink-2); text-shadow: 0 2px 20px rgba(0, 0, 0, .7); }
+.line { font-size: 80px; font-weight: 820; line-height: 1.22; text-shadow: 0 4px 30px rgba(0, 0, 0, .65); }
+
+.block { right: 92px; left: 92px; text-align: right; }
+
+/* chapter bar */
+#chap { top: 176px; right: 92px; left: 92px; display: flex; align-items: center; justify-content: space-between; opacity: 0; }
+#chap .name { display: flex; align-items: center; gap: 12px; font-size: 27px; font-weight: 600; color: rgba(238, 247, 247, .78); }
+#chap .name i { width: 10px; height: 10px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 12px var(--teal); }
+#chap .segs { display: flex; gap: 10px; direction: rtl; }
+#chap .segs span { width: 64px; height: 5px; border-radius: 3px; background: rgba(238, 247, 247, .18); overflow: hidden; }
+#chap .segs b { display: block; height: 100%; width: 100%; background: var(--teal); transform-origin: 100% 50%; transform: scaleX(0); }
+
+/* 1 hook */
+#hook { top: 520px; }
+#hook .kt { font-size: 156px; font-weight: 900; line-height: 1.16; }
+#hook .numb { display: inline-block; }
+#clock {
+  top: 410px; right: 92px; display: flex; align-items: center; gap: 14px;
+  padding: 10px 22px 10px 24px; border-radius: 40px;
+  background: rgba(5, 11, 15, .55); border: 1.5px solid rgba(46, 240, 220, .35);
+  font-size: 32px; font-weight: 600; color: rgba(238, 247, 247, .9);
+}
+#clock svg { width: 30px; height: 30px; }
+#sweep {
+  left: 0; right: 0; top: 0; height: 4px;
+  background: linear-gradient(90deg, transparent, var(--teal) 18%, #c9fff9 50%, var(--teal) 82%, transparent);
+  box-shadow: 0 0 22px 6px rgba(46, 240, 220, .45);
+  opacity: 0;
+}
+
+/* 2 anatomy */
+#scanText { top: 1380px; }
+#anaHead { top: 262px; }
+#anaHead .sub { margin-top: 10px; }
+.lbl {
+  left: 0; top: 0; white-space: nowrap;
+  font-size: 33px; font-weight: 700; padding: 7px 18px 9px; border-radius: 12px;
+  background: rgba(4, 10, 14, .66); border: 1.5px solid var(--teal-soft);
+  text-shadow: none; opacity: 0;
+}
+.lbl.redlbl { border-color: var(--red-soft); }
+.lbl .tag { position: absolute; right: 0; top: calc(100% + 10px); font-size: 26px; font-weight: 800; color: #fff; background: var(--red); border-radius: 8px; padding: 3px 12px 5px; white-space: nowrap; box-shadow: 0 0 22px rgba(255, 61, 87, .4); }
+#leaders { left: 0; top: 0; width: 1080px; height: 1920px; }
+#leaders path { fill: none; stroke: var(--teal); stroke-width: 2.4; opacity: .9; }
+#leaders circle { fill: var(--teal); }
+#leaders .r path { stroke: var(--red); }
+#leaders .r circle { fill: var(--red); }
+#marks { left: 0; top: 0; width: 1080px; height: 1920px; }
+#marks .arrow path { fill: none; stroke: var(--red); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+#marks .ring { fill: none; stroke: var(--red); }
+
+/* 3 why */
+#whyHead { top: 262px; }
+#whyHead .line { margin-top: 2px; }
+#causeHead { top: 262px; }
+#causeHead .line { font-size: 70px; }
+#causes { right: 92px; top: 1000px; width: 820px; }
+.spine { position: absolute; right: -2px; top: 0; width: 3px; height: 100%; background: linear-gradient(var(--red), rgba(255, 61, 87, .15)); transform-origin: 50% 0; border-radius: 2px; }
+.chip {
+  position: relative; display: flex; align-items: center; gap: 24px;
+  margin: 0 34px 20px 0; padding: 16px 20px 16px 34px; width: fit-content;
+  border-radius: 24px; background: var(--panel); border: 1.5px solid rgba(255, 61, 87, .28);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, .35);
+}
+.chip::before { content: ''; position: absolute; right: -36px; top: 50%; width: 34px; height: 2px; background: rgba(255, 61, 87, .7); }
+.ic {
+  flex: none; width: 84px; height: 84px; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 2px solid rgba(255, 61, 87, .6); background: rgba(255, 61, 87, .08);
+}
+.ic svg { width: 50px; height: 50px; }
+.ic path, .ic circle, .ic rect, .ic line, .ic polyline {
+  fill: none; stroke: var(--red); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round;
+}
+.chip .t { font-size: 44px; font-weight: 800; line-height: 1.25; }
+.chip .s { font-size: 28px; font-weight: 450; color: var(--ink-2); line-height: 1.4; }
+
+/* 4 symptoms */
+#symHead { top: 262px; }
+.flbl { left: 0; top: 0; font-size: 36px; font-weight: 800; color: #fff; padding: 4px 18px 8px; border-radius: 30px; background: rgba(255, 61, 87, .9); box-shadow: 0 0 26px rgba(255, 61, 87, .45); opacity: 0; white-space: nowrap; }
+#symFoot { left: 92px; right: 92px; top: 1560px; display: flex; justify-content: center; gap: 18px; }
+.pill { display: flex; align-items: center; gap: 12px; padding: 12px 26px 14px; border-radius: 40px; background: var(--panel); border: 1.5px solid rgba(255, 61, 87, .4); font-size: 34px; font-weight: 700; opacity: 0; }
+.pill i { width: 12px; height: 12px; border-radius: 50%; background: var(--red); box-shadow: 0 0 12px var(--red); }
+
+/* 5 solution */
+#solHead { top: 262px; }
+#tips { right: 92px; left: 92px; top: 1170px; }
+.tip {
+  display: flex; align-items: center; gap: 24px;
+  margin-bottom: 20px; padding: 18px 24px 18px 30px;
+  border-radius: 26px; background: var(--panel); border: 1.5px solid rgba(46, 240, 220, .3);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, .35);
+}
+.tip .n { flex: none; width: 54px; font-size: 50px; font-weight: 900; color: var(--teal); text-align: center; }
+.tip .ic { border-color: rgba(46, 240, 220, .6); background: rgba(46, 240, 220, .07); }
+.tip .ic path, .tip .ic circle, .tip .ic rect, .tip .ic line, .tip .ic polyline { stroke: var(--teal); }
+.tip .t { font-size: 46px; font-weight: 820; line-height: 1.25; }
+.tip .s { font-size: 29px; font-weight: 450; color: var(--ink-2); line-height: 1.4; }
+
+/* end card */
+#end { left: 0; right: 0; top: 0; height: 1920px; text-align: center; }
+#end .halo { position: absolute; left: 540px; top: 760px; width: 520px; height: 520px; margin: -260px 0 0 -260px; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(46, 240, 220, .2), rgba(46, 240, 220, .06) 60%, transparent); opacity: 0; }
+#end .ring { position: absolute; left: 540px; top: 760px; width: 300px; height: 300px; margin: -150px 0 0 -150px; border-radius: 50%; border: 2px solid rgba(46, 240, 220, .55); opacity: 0; }
+#end svg.big { position: absolute; left: 540px; top: 760px; width: 190px; height: 190px; margin: -95px 0 0 -95px; }
+#end svg.big path, #end svg.big circle { fill: none; stroke: var(--teal); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+#end .a { position: absolute; left: 0; right: 0; top: 960px; font-size: 64px; font-weight: 500; color: var(--ink-2); }
+#end .b { position: absolute; left: 0; right: 0; top: 1050px; font-size: 104px; font-weight: 900; }
+#end .c { position: absolute; left: 0; right: 0; top: 1330px; font-size: 30px; font-weight: 600; color: rgba(238, 247, 247, .55); display: flex; justify-content: center; align-items: center; gap: 14px; opacity: 0; }
+#end .c i { width: 10px; height: 10px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 10px var(--teal); }
+
+/* preview-only controls (removed in render mode) */
+#replay {
+  position: absolute; left: 50%; top: 1640px; transform: translateX(-50%);
+  display: none; align-items: center; gap: 14px;
+  padding: 18px 40px 22px; border-radius: 60px; cursor: pointer;
+  font: 700 38px 'Vazirmatn', sans-serif; color: var(--ink);
+  background: rgba(5, 11, 15, .8); border: 2px solid var(--teal);
+  box-shadow: 0 0 30px rgba(46, 240, 220, .25);
+}
+#replay svg { width: 40px; height: 40px; }
+#replay:hover { background: rgba(46, 240, 220, .14); }
+#msg { position: absolute; inset: 0; display: none; place-items: center; text-align: center; padding: 80px; font-size: 40px; line-height: 1.7; color: var(--ink); background: #04070a; }
+#msg code { direction: ltr; display: inline-block; font-size: 32px; padding: 6px 16px; border-radius: 10px; background: rgba(46, 240, 220, .12); color: var(--teal); }
+</style>
+
+<script>
+  // Render mode: no clock may drive anything. rAF is stubbed before GSAP loads,
+  // so its ticker can never advance on its own. Every frame comes from renderFrame(t).
+  window.RENDER_MODE = /[?&]render\b/.test(location.search);
+  if (window.RENDER_MODE) {
+    window.requestAnimationFrame = function () { return 0; };
+    window.cancelAnimationFrame = function () {};
+  }
+</script>
+<script src="assets/lib/gsap.min.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "./assets/lib/three/three.module.min.js",
+  "three/addons/": "./assets/lib/three/addons/"
+} }
+</script>
+</head>
+<body>
+<div id="stage">
+  <canvas id="gl" width="1080" height="1920"></canvas>
+
+  <div id="ui">
+    <!-- chapter bar -->
+    <div id="chap">
+      <div class="name"><i></i><span>سندروم تونل کارپال</span></div>
+      <div class="segs"><span><b></b></span><span><b></b></span><span><b></b></span><span><b></b></span></div>
+    </div>
+
+    <!-- 1 · hook -->
+    <div id="clock">
+      <svg viewBox="0 0 32 32"><path d="M20.5 4.5a11.5 11.5 0 1 0 7 17.6A10 10 0 0 1 20.5 4.5z" fill="none" stroke="#2ef0dc" stroke-width="2.4" stroke-linejoin="round"/></svg>
+      <span>۳:۱۷ بامداد</span>
+    </div>
+    <div id="hook" class="block">
+      <p class="kt">انگشتات</p>
+      <p class="kt"><em class="teal">شب‌ها</em></p>
+      <p class="kt"><em class="red numbw">بی‌حس</em> میشن؟</p>
+    </div>
+    <div id="sweep"></div>
+
+    <!-- 2 · anatomy -->
+    <div id="scanText" class="block">
+      <div class="eyebrow"><span class="kt">۰۱</span><span class="bar"></span><span class="kt">آناتومی</span></div>
+      <p class="kt line" style="margin-top:14px">داخل مچ دستت</p>
+      <p class="kt line">یه <em class="teal">تونل باریک</em> هست</p>
+    </div>
+    <div id="anaHead" class="block">
+      <div class="eyebrow"><span class="kt">۰۱</span><span class="bar"></span><span class="kt">آناتومی</span></div>
+      <p class="kt title"><em class="teal">تونل کارپال</em></p>
+      <p class="kt sub">یه کانال باریک برای عصب مدین و ۹ تاندون</p>
+    </div>
+    <svg id="leaders" viewBox="0 0 1080 1920">
+      <g id="ld-bone"><path pathLength="1"/><circle r="7"/></g>
+      <g id="ld-lig"><path pathLength="1"/><circle r="7"/></g>
+      <g id="ld-ten"><path pathLength="1"/><circle r="7"/></g>
+      <g id="ld-ner"><path pathLength="1"/><circle r="7"/></g>
+    </svg>
+    <div class="lbl" id="lb-bone"><span class="kt">استخوان‌های مچ</span></div>
+    <div class="lbl" id="lb-lig"><span class="kt">رباط عرضی کارپ</span></div>
+    <div class="lbl" id="lb-ten"><span class="kt">تاندون‌های خم‌کننده</span></div>
+    <div class="lbl" id="lb-ner"><span class="kt">عصب مدین</span><span class="tag">تحت فشار</span></div>
+
+    <!-- 3 · why -->
+    <svg id="marks" viewBox="0 0 1080 1920">
+      <g class="arrow" id="ar0"><path d="M-22 -30 L0 -6 L22 -30 M0 -60 L0 -8"/></g>
+      <g class="arrow" id="ar1"><path d="M-22 -30 L0 -6 L22 -30 M0 -60 L0 -8"/></g>
+      <g class="arrow" id="ar2"><path d="M-30 -22 L-6 0 L-30 22 M-60 0 L-8 0"/></g>
+      <g class="arrow" id="ar3"><path d="M30 -22 L6 0 L30 22 M60 0 L8 0"/></g>
+      <circle class="ring" id="pr0" r="10"/>
+      <circle class="ring" id="pr1" r="10"/>
+      <circle class="ring" id="pr2" r="10"/>
+    </svg>
+    <div id="whyHead" class="block">
+      <div class="eyebrow redish"><span class="kt">۰۲</span><span class="bar"></span><span class="kt">چرا؟</span></div>
+      <p class="kt line" style="margin-top:14px">کانال <em class="red">تنگ</em> میشه</p>
+      <p class="kt line">تاندون‌ها <em class="red">متورم</em> میشن</p>
+      <p class="kt line">عصب مدین <em class="red">فشرده</em> میشه</p>
+    </div>
+    <div id="causeHead" class="block">
+      <div class="eyebrow redish"><span class="kt">۰۲</span><span class="bar"></span><span class="kt">چرا؟</span></div>
+      <p class="kt line" style="margin-top:14px">چه چیزهایی <em class="red">باعثش</em> میشه؟</p>
+    </div>
+    <div id="causes">
+      <div class="spine"></div>
+      <div class="chip"><div class="ic"><svg viewBox="0 0 64 64">
+        <path pathLength="1" d="M50 22A20 20 0 0 0 15 18"/><path pathLength="1" d="M13 8v11h11"/>
+        <path pathLength="1" d="M14 42a20 20 0 0 0 35 4"/><path pathLength="1" d="M51 56V45H40"/>
+        <rect pathLength="1" x="24" y="25" width="16" height="14" rx="3"/></svg></div>
+        <div><div class="t kt">حرکات تکراری</div><div class="s">تایپ، موس، کار مداوم با دست</div></div></div>
+      <div class="chip"><div class="ic"><svg viewBox="0 0 64 64">
+        <path pathLength="1" d="M4 22h24"/><path pathLength="1" d="M4 36h22"/>
+        <path pathLength="1" d="M28 22c8 0 13 5 15 13l3 19"/><path pathLength="1" d="M26 36c4 1 6 5 7 10l2 10"/>
+        <path pathLength="1" d="M44 10a16 16 0 0 1 14 14"/><path pathLength="1" d="M54 26l4-2 1 5"/></svg></div>
+        <div><div class="t kt">مچ خم‌شده</div><div class="s">برای مدت طولانی، سر کار یا موقع خواب</div></div></div>
+      <div class="chip"><div class="ic"><svg viewBox="0 0 64 64">
+        <path pathLength="1" d="M12 20h28l6 6v6l-6 6H12z"/><path pathLength="1" d="M20 38l-4 18h12l3-18"/>
+        <path pathLength="1" d="M46 29h14"/><path pathLength="1" d="M8 8l4 5M16 5l2 6M3 15l6 3"/></svg></div>
+        <div><div class="t kt">ابزار لرزشی</div><div class="s">دریل، چکش برقی، فرز</div></div></div>
+      <div class="chip"><div class="ic"><svg viewBox="0 0 64 64">
+        <circle pathLength="1" cx="30" cy="10" r="6"/><path pathLength="1" d="M27 18c-5 6-5 13-3 18"/>
+        <path pathLength="1" d="M24 36c10 0 18 5 18 12s-6 9-12 8"/><path pathLength="1" d="M25 36l-3 22"/>
+        <path pathLength="1" d="M32 22c4 3 7 5 10 5"/></svg></div>
+        <div><div class="t kt">بارداری</div><div class="s">احتباس مایعات و تورم بافت‌ها</div></div></div>
+      <div class="chip"><div class="ic"><svg viewBox="0 0 64 64">
+        <path pathLength="1" d="M20 6c-6 10-12 16-12 25a12 12 0 0 0 24 0c0-9-6-15-12-25z"/>
+        <path pathLength="1" d="M48 30c-5-8-12-5-11 4s7 11 11 5c4 6 10 4 11-5s-6-12-11-4z"/><path pathLength="1" d="M48 30v10"/></svg></div>
+        <div><div class="t kt">دیابت / تیروئید</div><div class="s">بیماری‌های زمینه‌ای و هورمونی</div></div></div>
+    </div>
+
+    <!-- 4 · symptoms -->
+    <div id="symHead" class="block">
+      <div class="eyebrow redish"><span class="kt">۰۳</span><span class="bar"></span><span class="kt">علائم</span></div>
+      <p class="kt title" style="margin-top:6px">گزگز و <em class="red">بی‌حسی</em></p>
+      <p class="kt sub">سوزن‌سوزن شدن انگشت‌ها</p>
+    </div>
+    <div class="flbl" id="fl-thumb">شست</div>
+    <div class="flbl" id="fl-index">اشاره</div>
+    <div class="flbl" id="fl-middle">میانی</div>
+    <div id="symFoot">
+      <div class="pill"><i></i>شب‌ها بدتر میشه</div>
+      <div class="pill"><i></i>ضعف در گرفتن اشیا</div>
+    </div>
+
+    <!-- 5 · solution -->
+    <div id="solHead" class="block">
+      <div class="eyebrow"><span class="kt">۰۴</span><span class="bar"></span><span class="kt">راه‌حل</span></div>
+      <p class="kt title" style="margin-top:6px">چی کار <em class="teal">کنیم؟</em></p>
+    </div>
+    <div id="tips">
+      <div class="tip"><div class="n">۱</div><div class="ic"><svg viewBox="0 0 64 64">
+        <rect pathLength="1" x="5" y="38" width="54" height="18" rx="4"/><path pathLength="1" d="M13 47h4M23 47h4M33 47h4M43 47h8"/>
+        <path pathLength="1" d="M4 27h34c6 0 10 1 14 4"/><path pathLength="1" d="M46 12l5 5 9-10"/></svg></div>
+        <div><div class="t kt">مچ صاف موقع تایپ</div><div class="s">کیبورد و موس هم‌سطح آرنج</div></div></div>
+      <div class="tip"><div class="n">۲</div><div class="ic"><svg viewBox="0 0 64 64">
+        <circle pathLength="1" cx="32" cy="36" r="21"/><path pathLength="1" d="M27 28v16M37 28v16"/>
+        <path pathLength="1" d="M26 7h12M32 7v8"/><path pathLength="1" d="M51 14l4 4"/></svg></div>
+        <div><div class="t kt">استراحت و کشش</div><div class="s">بین کار، وقفه‌های کوتاه بذار</div></div></div>
+      <div class="tip"><div class="n">۳</div><div class="ic"><svg viewBox="0 0 64 64">
+        <path pathLength="1" d="M18 8h22l3 48H15z"/><path pathLength="1" d="M14 20h30M13 34h31M14 48h30"/>
+        <path pathLength="1" d="M55 5a8 8 0 1 0 6 13 7 7 0 0 1-6-13z"/></svg></div>
+        <div><div class="t kt">مچ‌بند شبانه</div><div class="s">مچ رو موقع خواب صاف نگه می‌داره</div></div></div>
+    </div>
+
+    <!-- end card -->
+    <div id="end">
+      <div class="halo"></div>
+      <div class="ring"></div>
+      <svg class="big" viewBox="0 0 64 64">
+        <path pathLength="1" d="M14 6h-4v16a12 12 0 0 0 24 0V6h-4"/>
+        <path pathLength="1" d="M22 34v8a14 14 0 0 0 28 0v-6"/>
+        <circle pathLength="1" cx="50" cy="31" r="5"/>
+      </svg>
+      <p class="kt a">اگه ادامه داشت</p>
+      <p class="kt b"><em class="teal">به پزشک</em> مراجعه کن</p>
+      <div class="c"><i></i><span>سندروم تونل کارپال</span></div>
+    </div>
+  </div>
+
+  <button id="replay" type="button" aria-label="پخش مجدد">
+    <svg viewBox="0 0 32 32"><path d="M26 16a10 10 0 1 1-3-7.1M26 4v6h-6" fill="none" stroke="#2ef0dc" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>پخش مجدد</span>
+  </button>
+  <div id="msg"><div>این صفحه باید از روی یک سرور محلی باز بشه (نه file://)<br>داخل پوشه اجرا کن:<br><code>python3 -m http.server 8080</code><br>بعد برو به <code>http://localhost:8080</code></div></div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { FullScreenQuad } from 'three/addons/postprocessing/Pass.js';
+
+const RENDER = window.RENDER_MODE;
+const W = 1080, H = 1920, FPS = 30, DURATION = 40;
+const stage = document.getElementById('stage');
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+if (location.protocol === 'file:') { $('#msg').style.display = 'grid'; throw new Error('serve over http'); }
+if (RENDER) $('#replay').remove();
+
+/* ------------------------------------------------------------------ helpers */
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+const fract = (x) => x - Math.floor(x);
+const hash1 = (n) => fract(Math.sin(n * 127.1 + 311.7) * 43758.5453123);
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rand = mulberry32(20261101);
+const col = (hex) => new THREE.Color(hex); // sRGB hex -> linear working colour
+const C = {
+  teal: col('#2ef0dc'), tealDim: col('#1aa9b8'), cyan: col('#7ff6ff'), red: col('#ff3d57'), ember: col('#ff7a4d'), white: col('#a9f5ff'),
+};
+
+/* GSAP: unhook the root from the ticker, renderFrame() is the only clock */
+gsap.ticker.remove(gsap.updateRoot);
+gsap.ticker.lagSmoothing(0);
+gsap.globalTimeline.autoRemoveChildren = false;
+gsap.config({ force3D: false, nullTargetWarn: false });
+gsap.updateRoot(0);
+
+/* ------------------------------------------------------------------ text: word splitting */
+function splitWords(el) {
+  const words = [];
+  const nodes = [...el.childNodes];
+  el.textContent = '';
+  for (const n of nodes) {
+    const cls = n.nodeType === 1 ? n.className : '';
+    for (const w of n.textContent.split(/\s+/).filter(Boolean)) {
+      const s = document.createElement('span');
+      s.className = 'w' + (cls ? ' ' + cls : '');
+      s.textContent = w;
+      words.push(s);
+    }
+  }
+  words.forEach((s, i) => { el.appendChild(s); if (i < words.length - 1) el.appendChild(document.createTextNode(' ')); });
+  return words;
+}
+$$('.kt').forEach(splitWords);
+// the numb word gets an inner span so its tingle never fights the entrance tween
+const numbWord = $('#hook .numbw');
+numbWord.innerHTML = `<span class="numb">${numbWord.textContent}</span>`;
+const numbInner = $('.numb', numbWord);
+const W$ = (sel) => $$(sel.split(',').map((x) => x.trim() + ' .w').join(','));
+
+/* ------------------------------------------------------------------ three: renderer, scenes */
+const canvas = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H, false);
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace; // the final pass encodes sRGB itself
+renderer.toneMapping = THREE.NoToneMapping;
+renderer.setClearColor(0x000000, 1);
+
+const scene3d = new THREE.Scene();
+const cam3d = new THREE.PerspectiveCamera(28, W / H, 0.1, 100);
+const scene2d = new THREE.Scene();
+const cam2d = new THREE.OrthographicCamera(0, W, 0, H, -10, 10); // pixel space, y down
+
+const fxRT = new THREE.WebGLRenderTarget(W, H, { type: THREE.HalfFloatType, samples: 4 });
+const composer = new EffectComposer(renderer, fxRT);
+composer.renderToScreen = false;
+const pass3d = new RenderPass(scene3d, cam3d);
+const pass2d = new RenderPass(scene2d, cam2d);
+pass2d.clear = false;
+const bloom = new UnrealBloomPass(new THREE.Vector2(W, H), 0.75, 0.42, 0.3);
+composer.addPass(pass3d);
+composer.addPass(pass2d);
+composer.addPass(bloom);
+
+/* shared uniforms */
+const U = {
+  time: { value: 0 },
+  swell: { value: 0 },
+  squash: { value: 0 },
+  scanZ: { value: -8 },
+};
+
+/* ------------------------------------------------------------------ shaders */
+const LINE3_VS = /* glsl */`
+varying vec2 vUv; varying float vZ;
+void main(){ vUv = uv; vZ = position.z; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+const LINE3_FS = /* glsl */`
+uniform vec3 uColor; uniform float uDraw; uniform float uOpacity; uniform float uHead; uniform float uZFar;
+varying vec2 vUv; varying float vZ;
+void main(){
+  if (vUv.x > uDraw) discard;
+  float head = smoothstep(uDraw - 0.06, uDraw, vUv.x) * (1.0 - step(0.999, uDraw));
+  float zf = smoothstep(uZFar, uZFar + 4.5, vZ);
+  gl_FragColor = vec4(uColor * (1.0 + head * uHead) * uOpacity * zf, 1.0);
+}`;
+
+const HOLO_VS = /* glsl */`
+uniform float uSwellK; uniform float uSquashK; uniform vec2 uOval;
+uniform float uSwell; uniform float uSquash;
+varying vec3 vN; varying vec3 vV; varying vec2 vUv; varying vec3 vP;
+void main(){
+  vec3 p = position;
+  float pr = 1.0 - smoothstep(1.0, 2.9, abs(p.z));
+  vec2 nn = normal.xy;
+  p.xy += nn * uOval;
+  p.xy += nn * (uSwell * uSwellK) * pr;
+  p.y  -= nn.y * (uSquash * uSquashK) * pr;
+  p.x  += nn.x * (uSquash * uSquashK * 0.45) * pr;
+  vec4 mv = modelViewMatrix * vec4(p, 1.0);
+  vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); vUv = uv; vP = p;
+  gl_Position = projectionMatrix * mv;
+}`;
+const HOLO_FS = /* glsl */`
+uniform vec3 uColor; uniform float uOpacity; uniform float uDraw; uniform float uMode;
+uniform float uFill; uniform float uRim; uniform float uTime; uniform float uPulse; uniform float uZFar; uniform float uScanZ;
+varying vec3 vN; varying vec3 vV; varying vec2 vUv; varying vec3 vP;
+void main(){
+  float rev = 1.0; float head = 0.0;
+  if (uMode < 0.5) {
+    if (vUv.x > uDraw) discard;
+    head = smoothstep(uDraw - 0.05, uDraw, vUv.x) * (1.0 - step(0.999, uDraw));
+  } else {
+    rev = smoothstep(uScanZ + 0.02, uScanZ - 0.4, vP.z);
+    if (rev <= 0.0) discard;
+    head = smoothstep(0.3, 0.0, abs(vP.z - uScanZ)) * 0.8;
+  }
+  float fres = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.0);
+  float bands = 0.5 + 0.5 * sin(vP.z * 13.0 - uTime * 2.4);
+  float a = uFill + uRim * fres * (0.78 + 0.22 * bands);
+  float pulse = 1.0 + uPulse * (0.6 + 0.4 * sin(uTime * 8.0 - vP.z * 2.2));
+  float zf = smoothstep(uZFar, uZFar + 4.5, vP.z);
+  vec3 c = uColor * (a * pulse + head * 1.1);
+  gl_FragColor = vec4(c * uOpacity * rev * zf, 1.0);
+}`;
+
+const SIG_VS = /* glsl */`
+uniform vec3 uPts[64]; uniform float uTravel; uniform float uSize; uniform float uSquash; uniform float uJam; uniform float uTime; uniform float uDraw;
+attribute float aPhase; attribute float aSeed; attribute float aAng; attribute float aRad;
+varying float vA;
+vec3 curve(float s){ float f = clamp(s, 0.0, 1.0) * 63.0; int i = int(floor(f)); int j = min(i + 1, 63); return mix(uPts[i], uPts[j], fract(f)); }
+void main(){
+  float s = fract(aPhase + uTravel * (0.75 + 0.5 * aSeed));
+  float stuck = step(aSeed, uJam * 0.6);
+  float sEntry = 0.66 - 0.07 * fract(aSeed * 7.13);
+  s = mix(s, min(s, sEntry), stuck);
+  vec3 c = curve(s);
+  float pr = 1.0 - smoothstep(1.0, 2.9, abs(c.z));
+  float q = uSquash * pr;
+  vec2 off = vec2(cos(aAng) * 0.23 * (1.0 + 0.45 * q), sin(aAng) * 0.13 * (1.0 - 0.55 * q)) * aRad;
+  off += (vec2(fract(sin(aSeed * 91.7 + uTime * 13.0) * 437.5), fract(sin(aSeed * 47.3 + uTime * 11.0) * 271.9)) - 0.5) * 0.06 * uJam;
+  vec4 mv = modelViewMatrix * vec4(c + vec3(off, 0.0), 1.0);
+  gl_Position = projectionMatrix * mv;
+  float flick = 0.55 + 0.45 * sin(uTime * (22.0 + 30.0 * aSeed) + aSeed * 40.0);
+  gl_PointSize = uSize * (0.55 + aSeed) * (22.0 / -mv.z) * mix(1.0, flick, uJam);
+  vA = smoothstep(0.0, 0.08, s) * smoothstep(1.0, 0.95, s) * step(s, uDraw) * mix(1.0, 0.5 + flick * 0.8, uJam) * smoothstep(-6.5, -2.0, c.z);
+}`;
+const SIG_FS = /* glsl */`
+uniform vec3 uColor; uniform float uOpacity; varying float vA;
+void main(){ float r = length(gl_PointCoord - 0.5); float a = smoothstep(0.5, 0.0, r); a *= a; gl_FragColor = vec4(uColor * a * vA * uOpacity, 1.0); }`;
+
+const RIB_VS = /* glsl */`
+varying vec2 vUv; varying vec2 vPos;
+void main(){ vUv = uv; vPos = position.xy; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+const RIB_FS = /* glsl */`
+uniform vec3 uColor; uniform float uDraw; uniform float uOpacity; uniform float uHead; uniform vec2 uFadeY;
+varying vec2 vUv; varying vec2 vPos;
+void main(){
+  if (vUv.x > uDraw) discard;
+  float e = abs(vUv.y - 0.5) * 2.0;
+  float core = 1.0 - smoothstep(0.0, 1.0, e); core *= core;
+  float head = smoothstep(uDraw - 0.035, uDraw, vUv.x) * (1.0 - step(0.999, uDraw));
+  float fy = 1.0 - smoothstep(uFadeY.x, uFadeY.y, vPos.y);
+  gl_FragColor = vec4(uColor * core * (1.0 + head * uHead) * uOpacity * fy, 1.0);
+}`;
+const FILL_FS = /* glsl */`
+uniform vec3 uColor; uniform float uOpacity; uniform float uTime; uniform vec2 uFadeY;
+varying vec2 vUv; varying vec2 vPos;
+void main(){
+  float scan = 0.5 + 0.5 * sin(vPos.y * 0.22 - uTime * 5.0);
+  float fy = 1.0 - smoothstep(uFadeY.x, uFadeY.y, vPos.y);
+  gl_FragColor = vec4(uColor * (0.05 + 0.035 * scan) * uOpacity * fy, 1.0);
+}`;
+
+const HP_VS = /* glsl */`
+uniform vec2 uPath[192]; uniform float uTravel; uniform float uSize; uniform float uTime; uniform float uDraw;
+attribute float aPath; attribute float aPhase; attribute float aSeed; attribute float aOff;
+varying float vA;
+vec2 pathAt(int k, float s){ float f = clamp(s, 0.0, 1.0) * 63.0; int i = int(floor(f)); int j = min(i + 1, 63); return mix(uPath[k * 64 + i], uPath[k * 64 + j], fract(f)); }
+void main(){
+  int k = int(aPath + 0.5);
+  float s = fract(aPhase + uTravel * (0.8 + 0.45 * aSeed));
+  vec2 p = pathAt(k, s);
+  vec2 t = pathAt(k, s + 0.012) - p;
+  vec2 nrm = normalize(vec2(-t.y, t.x) + 1e-5);
+  p += nrm * aOff * 6.0;
+  float tip = smoothstep(0.88, 1.0, s);
+  float ang = aSeed * 6.2831 + uTime * 0.7;
+  p += vec2(cos(ang), sin(ang)) * tip * (16.0 + 46.0 * fract(aSeed * 13.7));
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 0.0, 1.0);
+  float flick = 0.6 + 0.4 * sin(uTime * (18.0 + 26.0 * aSeed) + aSeed * 30.0);
+  gl_PointSize = uSize * (0.45 + aSeed) * (1.0 + 0.8 * tip) * flick;
+  vA = smoothstep(0.0, 0.05, s) * (1.0 - smoothstep(0.94, 1.0, s)) * step(s, uDraw);
+}`;
+const GLOW_VS = /* glsl */`
+uniform float uI[4]; uniform float uSize[4]; attribute float aIdx; varying float vA;
+void main(){ int i = int(aIdx + 0.5); vA = uI[i]; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); gl_PointSize = uSize[i]; }`;
+const GLOW_FS = /* glsl */`
+uniform vec3 uColor; varying float vA;
+void main(){ float r = length(gl_PointCoord - 0.5) * 2.0; float a = exp(-r * r * 5.0) * (1.0 - smoothstep(0.85, 1.0, r)); float core = exp(-r * r * 40.0); gl_FragColor = vec4((uColor * a + vec3(1.0, 0.55, 0.5) * core * 0.6) * vA, 1.0); }`;
+
+const DUST_VS = /* glsl */`
+uniform float uTime;
+varying float vA;
+void main(){
+  vec3 s = position;
+  float x = fract(s.x + uTime * 0.006 * (s.z - 0.5)) * 1080.0 + sin(uTime * 0.55 + s.z * 31.0) * 14.0;
+  float y = fract(s.y - uTime * (0.004 + 0.012 * s.z)) * 1920.0;
+  vA = 0.25 + 0.75 * (0.5 + 0.5 * sin(uTime * (0.7 + 1.8 * s.z) + s.x * 40.0));
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(x, y, 0.0, 1.0);
+  gl_PointSize = 2.0 + 6.0 * s.z * s.z;
+}`;
+const DUST_FS = /* glsl */`
+uniform vec3 uColor; uniform float uOpacity; varying float vA;
+void main(){ float r = length(gl_PointCoord - 0.5); float a = smoothstep(0.5, 0.0, r); gl_FragColor = vec4(uColor * a * a * vA * uOpacity, 1.0); }`;
+
+const BASE_MAT = { transparent: true, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide };
+function lineMat(color, opacity = 1, zFar = -9, head = 2.2) {
+  return new THREE.ShaderMaterial({
+    ...BASE_MAT, vertexShader: LINE3_VS, fragmentShader: LINE3_FS,
+    uniforms: { uColor: { value: color.clone() }, uDraw: { value: 0 }, uOpacity: { value: opacity }, uHead: { value: head }, uZFar: { value: zFar } },
+  });
+}
+function holoMat(color, o = {}) {
+  return new THREE.ShaderMaterial({
+    ...BASE_MAT, vertexShader: HOLO_VS, fragmentShader: HOLO_FS,
+    uniforms: {
+      uColor: { value: color.clone() }, uOpacity: { value: o.opacity ?? 1 }, uDraw: { value: 0 }, uMode: { value: o.mode ?? 0 },
+      uFill: { value: o.fill ?? 0.04 }, uRim: { value: o.rim ?? 0.6 }, uTime: U.time, uPulse: { value: 0 }, uZFar: { value: o.zFar ?? -9 },
+      uScanZ: U.scanZ, uSwell: U.swell, uSquash: U.squash, uSwellK: { value: o.swellK ?? 0 }, uSquashK: { value: o.squashK ?? 0 },
+      uOval: { value: new THREE.Vector2(...(o.oval ?? [0, 0])) },
+    },
+  });
+}
+function ribMat(color, opacity = 1, fadeY = [3000, 3100], head = 2.0) {
+  return new THREE.ShaderMaterial({
+    ...BASE_MAT, vertexShader: RIB_VS, fragmentShader: RIB_FS,
+    uniforms: { uColor: { value: color.clone() }, uDraw: { value: 0 }, uOpacity: { value: opacity }, uHead: { value: head }, uFadeY: { value: new THREE.Vector2(...fadeY) } },
+  });
+}
+
+/* ------------------------------------------------------------------ 3D wrist cross-section (carpal tunnel) */
+// Transverse slice through the distal carpal row, palm side up (+y), wrist axis along z (+z toward the viewer).
+const model = new THREE.Group();
+scene3d.add(model);
+const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
+const smoothLoop = (pts, n = 120) => new THREE.CatmullRomCurve3(pts.map(([x, y]) => v3(x, y, 0)), true, 'centripetal').getSpacedPoints(n).slice(0, n);
+const loopCurve = (pts2, z) => new THREE.CatmullRomCurve3(pts2.map((p) => v3(p.x, p.y, z)), true, 'centripetal');
+
+const BONES = [
+  [[-2.35, 0.1], [-2.22, 0.52], [-1.9, 0.74], [-1.62, 1.02], [-1.38, 0.9], [-1.33, 0.48], [-1.3, 0.06], [-1.55, -0.3], [-2.0, -0.32], [-2.3, -0.15]], // trapezium
+  [[-1.26, -0.28], [-1.02, -0.06], [-0.62, -0.1], [-0.42, -0.36], [-0.46, -0.76], [-0.8, -0.96], [-1.15, -0.82], [-1.3, -0.56]], // trapezoid
+  [[-0.36, -0.5], [-0.06, -0.38], [0.34, -0.4], [0.6, -0.56], [0.66, -0.96], [0.4, -1.26], [-0.05, -1.32], [-0.36, -1.12], [-0.43, -0.8]], // capitate
+  [[0.7, -0.52], [0.76, -0.2], [1.0, 0.0], [1.2, 0.36], [1.28, 0.8], [1.48, 1.0], [1.7, 0.86], [1.76, 0.36], [1.82, -0.14], [1.66, -0.6], [1.3, -0.86], [0.95, -0.86], [0.72, -0.74]], // hamate + hook
+];
+const LIG_TOP = [[-1.74, 1.1], [-1.0, 1.27], [0, 1.34], [1.0, 1.27], [1.64, 1.08]];
+const LIG_BOT = [[1.5, 0.92], [1.0, 1.08], [0, 1.14], [-1.0, 1.08], [-1.6, 0.94]];
+const TENDONS = [
+  [-0.93, 0.36, 0.17], // FPL
+  [-0.55, 0.15, 0.19], [-0.1, -0.1, 0.19], [0.35, -0.12, 0.19], [0.78, 0.18, 0.19], // FDP
+  [-0.18, 0.42, 0.18], [0.2, 0.66, 0.19], [0.58, 0.62, 0.18], [1.0, 0.62, 0.16], // FDS
+];
+const NERVE = [-0.55, 0.8];
+const ZF = 1.3; // the slice face
+const SKIN = { cx: -0.25, cy: 0.08, rx: 2.8, ry: 1.86 };
+
+const M = { skinLines: [], boneLines: [], boneSurf: [], ligLines: [], ligSurf: null, tendSurf: [], tendRings: [], nerveSurf: null, nerveRing: null, scan: null };
+
+// skin envelope (wireframe hologram of the wrist)
+{
+  const ell = (z, k = 1) => new THREE.CatmullRomCurve3(Array.from({ length: 48 }, (_, i) => {
+    const a = (i / 48) * Math.PI * 2;
+    return v3(SKIN.cx + Math.cos(a) * SKIN.rx * k, SKIN.cy + Math.sin(a) * SKIN.ry * k * (Math.sin(a) > 0 ? 0.94 : 1), z);
+  }), true);
+  for (const [z, op] of [[ZF, 0.55], [-1.8, 0.2], [-4.4, 0.12]]) {
+    const m = lineMat(C.tealDim, op, -8);
+    model.add(new THREE.Mesh(new THREE.TubeGeometry(ell(z), 200, 0.011, 5, true), m));
+    M.skinLines.push(m);
+  }
+  for (let i = 0; i < 10; i++) {
+    const a = (i / 10) * Math.PI * 2 + 0.31;
+    const x = SKIN.cx + Math.cos(a) * SKIN.rx, y = SKIN.cy + Math.sin(a) * SKIN.ry * (Math.sin(a) > 0 ? 0.94 : 1);
+    const m = lineMat(C.tealDim, 0.16, -8, 1.2);
+    model.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.LineCurve3(v3(x, y, -7), v3(x, y, ZF)), 40, 0.008, 4, false), m));
+    M.skinLines.push(m);
+  }
+}
+
+// carpal bones: extruded, with front/back outlines and a few longitudinal edges
+const boneGroup = new THREE.Group();
+model.add(boneGroup);
+BONES.forEach((pts, bi) => {
+  const loop = smoothLoop(pts, 90);
+  const shape = new THREE.Shape(loop.map((p) => new THREE.Vector2(p.x, p.y)));
+  const geo = new THREE.ExtrudeGeometry(shape, { depth: 2.2, bevelEnabled: true, bevelThickness: 0.12, bevelSize: 0.05, bevelSegments: 2, curveSegments: 1, steps: 2 });
+  geo.translate(0, 0, -1.1);
+  const surf = new THREE.Mesh(geo, holoMat(C.teal, { mode: 1, fill: 0.0, rim: 0.07 }));
+  boneGroup.add(surf);
+  M.boneSurf.push(surf.material);
+  const cap = new THREE.Mesh(new THREE.ShapeGeometry(shape, 1), holoMat(C.teal, { mode: 1, fill: 0.055, rim: 0.0 }));
+  cap.position.z = 1.225;
+  boneGroup.add(cap);
+  M.boneSurf.push(cap.material);
+  const lines = [];
+  for (const [z, op] of [[1.22, 1.0], [-1.22, 0.3]]) {
+    const m = lineMat(C.teal, op);
+    boneGroup.add(new THREE.Mesh(new THREE.TubeGeometry(loopCurve(loop, z), 180, 0.012, 5, true), m));
+    lines.push(m);
+  }
+  for (let k = 0; k < 4; k++) {
+    const p = loop[Math.floor((k / 4 + bi * 0.13) * loop.length) % loop.length];
+    const m = lineMat(C.teal, 0.3, -9, 1.5);
+    boneGroup.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.LineCurve3(v3(p.x, p.y, -1.22), v3(p.x, p.y, 1.22)), 8, 0.008, 4, false), m));
+    lines.push(m);
+  }
+  M.boneLines.push(lines);
+});
+
+// transverse carpal ligament (flexor retinaculum): a band roofing the tunnel
+const ligGroup = new THREE.Group();
+model.add(ligGroup);
+{
+  const loop = smoothLoop([...LIG_TOP, ...LIG_BOT], 110);
+  const shape = new THREE.Shape(loop.map((p) => new THREE.Vector2(p.x, p.y)));
+  const geo = new THREE.ExtrudeGeometry(shape, { depth: 2.6, bevelEnabled: false, curveSegments: 1, steps: 2 });
+  geo.translate(0, 0, -1.3);
+  const surf = new THREE.Mesh(geo, holoMat(C.cyan, { mode: 1, fill: 0.0, rim: 0.08 }));
+  ligGroup.add(surf);
+  M.ligSurf = surf.material;
+  const cap = new THREE.Mesh(new THREE.ShapeGeometry(shape, 1), holoMat(C.cyan, { mode: 1, fill: 0.07, rim: 0.0 }));
+  cap.position.z = 1.302;
+  ligGroup.add(cap);
+  M.ligCap = cap.material;
+  cap.material.uniforms.uColor = surf.material.uniforms.uColor;
+  for (const [z, op] of [[1.3, 1.0], [-1.3, 0.3]]) {
+    const m = lineMat(C.cyan, op);
+    ligGroup.add(new THREE.Mesh(new THREE.TubeGeometry(loopCurve(loop, z), 200, 0.012, 5, true), m));
+    M.ligLines.push(m);
+  }
+  // fibres across the band
+  const top = new THREE.CatmullRomCurve3(LIG_TOP.map(([x, y]) => v3(x, y - 0.05, 0)), false, 'centripetal').getSpacedPoints(40);
+  for (let i = 0; i < 9; i++) {
+    const z = -1.15 + i * (2.3 / 8);
+    const m = lineMat(C.cyan, 0.32, -9, 1.6);
+    const c = new THREE.CatmullRomCurve3(top.map((p) => v3(p.x, p.y - 0.02 * Math.sin(i * 1.7), z)));
+    ligGroup.add(new THREE.Mesh(new THREE.TubeGeometry(c, 60, 0.007, 4, false), m));
+    M.ligLines.push(m);
+  }
+}
+
+// flexor tendons and median nerve: tubes running along the wrist, drawn back -> front
+function axialPath(x, y, extra = 0) {
+  return new THREE.CatmullRomCurve3([
+    v3(x * 0.62 - 0.1, y - 0.95, -8),
+    v3(x * 0.74 - 0.05, y - 0.55, -5),
+    v3(x * 0.93, y - 0.08, -2),
+    v3(x, y, 0),
+    v3(x * 1.01, y + 0.01 + extra, ZF),
+  ], false, 'centripetal');
+}
+const tendGroup = new THREE.Group();
+model.add(tendGroup);
+const tendonColor = { value: C.teal.clone() };
+TENDONS.forEach(([x, y, r], i) => {
+  const mat = holoMat(C.teal, { mode: 0, fill: 0.0, rim: 0.15, swellK: 0.075, zFar: -6.5 });
+  mat.uniforms.uColor = tendonColor;
+  tendGroup.add(new THREE.Mesh(new THREE.TubeGeometry(axialPath(x, y), 90, r, 18, false), mat));
+  M.tendSurf.push(mat);
+  const ringM = lineMat(C.teal, 1.0);
+  ringM.uniforms.uColor = tendonColor;
+  const ring = new THREE.Group();
+  ring.add(new THREE.Mesh(new THREE.TubeGeometry(circleCurve(r), 64, 0.011, 5, true), ringM));
+  const capM = holoMat(C.teal, { mode: 0, fill: 0.085, rim: 0.0 });
+  capM.uniforms.uColor = tendonColor;
+  capM.uniforms.uDraw = ringM.uniforms.uDraw;
+  ring.add(new THREE.Mesh(new THREE.CircleGeometry(r, 40), capM));
+  ring.position.set(x * 1.01, y + 0.01, ZF);
+  ring.userData = { r, mats: [ringM, capM] };
+  tendGroup.add(ring);
+  M.tendRings.push(ring);
+});
+function circleCurve(r, ry = r) {
+  return new THREE.CatmullRomCurve3(Array.from({ length: 40 }, (_, i) => { const a = (i / 40) * Math.PI * 2; return v3(Math.cos(a) * r, Math.sin(a) * ry, 0); }), true);
+}
+const nerveColor = { value: C.white.clone() };
+const nervePath = axialPath(NERVE[0], NERVE[1], 0.01);
+{
+  const mat = holoMat(C.white, { mode: 0, fill: 0.012, rim: 0.3, oval: [0.06, -0.05], squashK: 0.075, zFar: -6.0 });
+  mat.uniforms.uColor = nerveColor;
+  model.add(new THREE.Mesh(new THREE.TubeGeometry(nervePath, 90, 0.2, 20, false), mat));
+  M.nerveSurf = mat;
+  const g = new THREE.Group();
+  const rm = lineMat(C.white, 1.0);
+  rm.uniforms.uColor = nerveColor;
+  g.add(new THREE.Mesh(new THREE.TubeGeometry(circleCurve(0.26, 0.15), 80, 0.013, 5, true), rm));
+  [[-0.11, 0.0, 0.05], [0.0, 0.05, 0.045], [0.1, 0.0, 0.05], [-0.02, -0.06, 0.04], [0.15, -0.06, 0.03]].forEach(([fx, fy, fr]) => {
+    const f = new THREE.Mesh(new THREE.TubeGeometry(circleCurve(fr), 32, 0.006, 4, true), rm);
+    f.position.set(fx, fy, 0);
+    g.add(f);
+  });
+  const capM = holoMat(C.white, { mode: 0, fill: 0.1, rim: 0.0 });
+  capM.uniforms.uColor = nerveColor;
+  capM.uniforms.uDraw = rm.uniforms.uDraw;
+  const capG = new THREE.Mesh(new THREE.CircleGeometry(1, 48), capM);
+  capG.scale.set(0.26, 0.15, 1);
+  g.add(capG);
+  M.nerveCap = capM;
+  g.position.set(NERVE[0] * 1.01, NERVE[1] + 0.02, ZF + 0.002);
+  model.add(g);
+  M.nerveRing = g;
+  M.nerveRingMat = rm;
+}
+
+// scan plane that slices through the wrist while it is built
+{
+  const geo = new THREE.PlaneGeometry(7.4, 4.8);
+  const mat = new THREE.ShaderMaterial({
+    ...BASE_MAT,
+    uniforms: { uColor: { value: C.teal.clone() }, uOpacity: { value: 0 }, uTime: U.time },
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `uniform vec3 uColor; uniform float uOpacity; uniform float uTime; varying vec2 vUv;
+      void main(){ vec2 d = min(vUv, 1.0 - vUv); float edge = smoothstep(0.012, 0.0, min(d.x, d.y * 1.54));
+        float grid = smoothstep(0.94, 1.0, max(sin(vUv.x * 120.0), sin(vUv.y * 78.0))) * 0.25;
+        float a = 0.05 + edge * 0.9 + grid * 0.35;
+        gl_FragColor = vec4(uColor * a * uOpacity, 1.0); }`,
+  });
+  const plane = new THREE.Mesh(geo, mat);
+  plane.position.set(SKIN.cx, SKIN.cy, -8);
+  model.add(plane);
+  M.scan = plane;
+}
+
+// nerve signals: GPU particles flowing along the median nerve
+const SIG_N = 260;
+const sigMat = new THREE.ShaderMaterial({
+  ...BASE_MAT, vertexShader: SIG_VS, fragmentShader: SIG_FS,
+  uniforms: {
+    uPts: { value: nervePath.getSpacedPoints(63) }, uTravel: { value: 0 }, uSize: { value: 11 }, uSquash: U.squash, uJam: { value: 0 },
+    uTime: U.time, uDraw: { value: 0 }, uColor: { value: C.cyan.clone() }, uOpacity: { value: 0 },
+  },
+});
+{
+  const g = new THREE.BufferGeometry();
+  const pos = new Float32Array(SIG_N * 3), ph = new Float32Array(SIG_N), sd = new Float32Array(SIG_N), an = new Float32Array(SIG_N), rd = new Float32Array(SIG_N);
+  for (let i = 0; i < SIG_N; i++) { ph[i] = rand(); sd[i] = rand(); an[i] = rand() * Math.PI * 2; rd[i] = Math.sqrt(rand()) * 0.9; }
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('aPhase', new THREE.BufferAttribute(ph, 1));
+  g.setAttribute('aSeed', new THREE.BufferAttribute(sd, 1));
+  g.setAttribute('aAng', new THREE.BufferAttribute(an, 1));
+  g.setAttribute('aRad', new THREE.BufferAttribute(rd, 1));
+  const pts = new THREE.Points(g, sigMat);
+  pts.frustumCulled = false;
+  model.add(pts);
+}
+
+/* 3D label anchors (model space) */
+const ANCHORS = {
+  bone: v3(0.12, -1.18, 1.22),
+  lig: v3(0.55, 1.3, 1.3),
+  ten: v3(0.58, 0.62, ZF),
+  ner: v3(NERVE[0], NERVE[1] + 0.02, ZF),
+  ar0: v3(-0.75, 1.42, 1.3), ar1: v3(0.55, 1.44, 1.3), ar2: v3(-2.5, 0.25, 1.22), ar3: v3(2.0, 0.25, 1.22),
+};
+
+/* ------------------------------------------------------------------ 2D neon hand (symptoms) */
+const handGroup = new THREE.Group();
+scene2d.add(handGroup);
+const HAND = (() => {
+  const T = ([x, y]) => [(x - 637) * 1.08 + 540, (y - 1100) * 1.08 + 1082];
+  const fingers = {
+    little: { b: [432, 1088], a: -11, L: 220, w: 62 },
+    ring: { b: [506, 1043], a: -4, L: 290, w: 72 },
+    middle: { b: [584, 1032], a: 1.5, L: 315, w: 76 },
+    index: { b: [658, 1052], a: 8, L: 285, w: 73 },
+  };
+  const thumb = { b: [738, 1292], a: 40, L: 222, w: 86 };
+  const D = (a) => [Math.sin(a * Math.PI / 180), -Math.cos(a * Math.PI / 180)];
+  const N = (a) => [Math.cos(a * Math.PI / 180), Math.sin(a * Math.PI / 180)];
+  const P = (f, s, k) => { const d = D(f.a), n = N(f.a); return [f.b[0] + d[0] * s + n[0] * k, f.b[1] + d[1] * s + n[1] * k]; };
+  const fingerPts = (f, from = 0.08) => {
+    const hw = f.w / 2, r = hw * 0.88, tc = f.L - r, pts = [];
+    pts.push(P(f, f.L * from, -hw), P(f, f.L * 0.5, -hw * 0.95));
+    for (let i = 0; i <= 8; i++) { const phi = Math.PI - (Math.PI * i) / 8; pts.push(P(f, tc + Math.sin(phi) * r, Math.cos(phi) * r)); }
+    pts.push(P(f, f.L * 0.5, hw * 0.95), P(f, f.L * 0.08, hw));
+    return pts;
+  };
+  const web = (f1, f2) => { const a = P(f1, f1.L * 0.08, f1.w / 2), b = P(f2, f2.L * 0.08, -f2.w / 2); return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2 + 16]; };
+  const thumbPts = () => { const f = thumb, hw = f.w / 2, r = hw * 0.88, tc = f.L - r, pts = [P(f, f.L * 0.42, -hw * 0.95)]; for (let i = 0; i <= 8; i++) { const phi = Math.PI - (Math.PI * i) / 8; pts.push(P(f, tc + Math.sin(phi) * r, Math.cos(phi) * r)); } pts.push(P(f, f.L * 0.5, hw * 0.95), P(f, f.L * 0.1, hw)); return pts; };
+  const F = fingers;
+  const outline = [
+    [418, 1720], [419, 1590], [418, 1482], [397, 1385], [387, 1290], [392, 1185],
+    ...fingerPts(F.little), web(F.little, F.ring), ...fingerPts(F.ring), web(F.ring, F.middle),
+    ...fingerPts(F.middle), web(F.middle, F.index), ...fingerPts(F.index),
+    [702, 1118], [714, 1172], ...thumbPts(),
+    [786, 1372], [752, 1440], [678, 1486], [672, 1590], [674, 1720],
+  ];
+  const bones = [];
+  const seg = (f, a, b) => [P(f, f.L * a, 0), P(f, f.L * b, 0)];
+  for (const f of Object.values(F)) bones.push(seg(f, 0.03, 0.45), seg(f, 0.5, 0.74), seg(f, 0.79, 0.95));
+  bones.push(seg(thumb, 0.1, 0.52), seg(thumb, 0.57, 0.92));
+  const carp = [[472, 1398], [520, 1404], [566, 1400], [612, 1394]];
+  [F.little, F.ring, F.middle, F.index].forEach((f, i) => bones.push([carp[i], P(f, -12, 0)]));
+  bones.push([[650, 1404], P(thumb, -6, 0)]);
+  bones.push([[612, 1500], [622, 1720]], [[486, 1500], [476, 1720]]); // radius, ulna
+  const carpals = [[492, 1432, 16], [532, 1428, 15], [574, 1426, 16], [616, 1424, 15], [510, 1466, 15], [554, 1466, 16], [598, 1464, 15]];
+  const trunk = [[566, 1730], [562, 1610], [556, 1492], [560, 1400], [572, 1330]];
+  const nerves = {
+    thumb: [...trunk, [630, 1302], [700, 1264], [770, 1216], [828, 1172], [856, 1142]],
+    index: [...trunk, [612, 1240], [645, 1140], [660, 1058], [679, 940], [692, 840], [697, 792]],
+    middle: [...trunk, [580, 1222], [584, 1112], [586, 1000], [589, 880], [592, 760]],
+    ring: [[572, 1330], [548, 1222], [528, 1104], [520, 1000], [514, 900]],
+  };
+  const band = [[[438, 1446], [556, 1434], [672, 1450]], [[442, 1500], [556, 1490], [668, 1504]]];
+  const tips = { thumb: [856, 1142], index: [697, 792], middle: [592, 760], tunnel: [557, 1470] };
+  const tr = (arr) => arr.map(T);
+  return {
+    outline: tr(outline), bones: bones.map(tr), carpals: carpals.map(([x, y, r]) => [...T([x, y]), r * 1.08]),
+    nerves: Object.fromEntries(Object.entries(nerves).map(([k, v]) => [k, tr(v)])),
+    band: band.map(tr), tips: Object.fromEntries(Object.entries(tips).map(([k, v]) => [k, T(v)])),
+  };
+})();
+
+function smoothPath2(pts, n, closed = false) {
+  return new THREE.CatmullRomCurve3(pts.map(([x, y]) => v3(x, y, 0)), closed, 'centripetal').getSpacedPoints(n);
+}
+function ribbonGeo(points, width) {
+  const n = points.length;
+  const pos = new Float32Array(n * 2 * 3), uv = new Float32Array(n * 2 * 2), idx = [];
+  const len = [0];
+  for (let i = 1; i < n; i++) len.push(len[i - 1] + points[i].distanceTo(points[i - 1]));
+  const total = len[n - 1] || 1;
+  for (let i = 0; i < n; i++) {
+    const a = points[Math.max(0, i - 1)], b = points[Math.min(n - 1, i + 1)];
+    let tx = b.x - a.x, ty = b.y - a.y; const l = Math.hypot(tx, ty) || 1; tx /= l; ty /= l;
+    const nx = -ty * width / 2, ny = tx * width / 2, p = points[i];
+    pos.set([p.x + nx, p.y + ny, 0, p.x - nx, p.y - ny, 0], i * 6);
+    uv.set([len[i] / total, 0, len[i] / total, 1], i * 4);
+    if (i < n - 1) idx.push(i * 2, i * 2 + 1, i * 2 + 2, i * 2 + 1, i * 2 + 3, i * 2 + 2);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  g.setIndex(idx);
+  return g;
+}
+const HM = { bones: [], nerves: {}, band: [] };
+{
+  const fade = [1530, 1690];
+  const outlinePts = smoothPath2(HAND.outline, 900);
+  // translucent fill
+  const shape = new THREE.Shape(outlinePts.map((p) => new THREE.Vector2(p.x, p.y)));
+  const fill = new THREE.Mesh(new THREE.ShapeGeometry(shape, 1), new THREE.ShaderMaterial({
+    ...BASE_MAT, vertexShader: RIB_VS, fragmentShader: FILL_FS,
+    uniforms: { uColor: { value: C.teal.clone() }, uOpacity: { value: 0 }, uTime: U.time, uFadeY: { value: new THREE.Vector2(...fade) } },
+  }));
+  handGroup.add(fill);
+  HM.fill = fill.material;
+  HM.outline = ribMat(C.teal, 1.0, fade, 2.4);
+  handGroup.add(new THREE.Mesh(ribbonGeo(outlinePts, 9), HM.outline));
+  HM.outerGlow = ribMat(C.teal, 0.22, fade, 0);
+  handGroup.add(new THREE.Mesh(ribbonGeo(outlinePts, 30), HM.outerGlow));
+  for (const b of HAND.bones) {
+    const m = ribMat(C.tealDim, 0.5, fade, 1.0);
+    handGroup.add(new THREE.Mesh(ribbonGeo(smoothPath2(b, 24), 6), m));
+    HM.bones.push(m);
+  }
+  for (const [x, y, r] of HAND.carpals) {
+    const m = ribMat(C.tealDim, 0.5, fade, 1.0);
+    const pts = Array.from({ length: 33 }, (_, i) => { const a = (i / 32) * Math.PI * 2; return v3(x + Math.cos(a) * r, y + Math.sin(a) * r * 0.85, 0); });
+    handGroup.add(new THREE.Mesh(ribbonGeo(pts, 5), m));
+    HM.bones.push(m);
+  }
+  for (const b of HAND.band) {
+    const m = ribMat(C.cyan, 0.9, fade, 1.5);
+    handGroup.add(new THREE.Mesh(ribbonGeo(smoothPath2(b, 40), 7), m));
+    HM.band.push(m);
+  }
+  for (const [k, pts] of Object.entries(HAND.nerves)) {
+    const m = ribMat(C.red, k === 'ring' ? 0.45 : 0.95, [1600, 1740], 2.2);
+    handGroup.add(new THREE.Mesh(ribbonGeo(smoothPath2(pts, 200), k === 'ring' ? 5 : 8), m));
+    HM.nerves[k] = m;
+  }
+}
+// particles from the wrist to thumb, index and middle finger
+const HP_N = 540;
+const handPathPts = [];
+for (const k of ['thumb', 'index', 'middle']) for (const p of smoothPath2(HAND.nerves[k], 63)) handPathPts.push(new THREE.Vector2(p.x, p.y));
+const hpMat = new THREE.ShaderMaterial({
+  ...BASE_MAT, vertexShader: HP_VS, fragmentShader: SIG_FS,
+  uniforms: { uPath: { value: handPathPts }, uTravel: { value: 0 }, uSize: { value: 11 }, uTime: U.time, uDraw: { value: 0 }, uColor: { value: C.red.clone() }, uOpacity: { value: 0 } },
+});
+{
+  const g = new THREE.BufferGeometry();
+  const a = { position: new Float32Array(HP_N * 3), aPath: new Float32Array(HP_N), aPhase: new Float32Array(HP_N), aSeed: new Float32Array(HP_N), aOff: new Float32Array(HP_N) };
+  for (let i = 0; i < HP_N; i++) { a.aPath[i] = i % 3; a.aPhase[i] = rand(); a.aSeed[i] = rand(); a.aOff[i] = (rand() - 0.5) * 2; }
+  g.setAttribute('position', new THREE.BufferAttribute(a.position, 3));
+  for (const k of ['aPath', 'aPhase', 'aSeed', 'aOff']) g.setAttribute(k, new THREE.BufferAttribute(a[k], 1));
+  const p = new THREE.Points(g, hpMat);
+  p.frustumCulled = false;
+  handGroup.add(p);
+}
+// glow spots: thumb, index, middle tips + the tunnel
+const glowMat = new THREE.ShaderMaterial({
+  ...BASE_MAT, vertexShader: GLOW_VS, fragmentShader: GLOW_FS,
+  uniforms: { uI: { value: [0, 0, 0, 0] }, uSize: { value: [150, 150, 150, 190] }, uColor: { value: C.red.clone() } },
+});
+{
+  const g = new THREE.BufferGeometry();
+  const t = HAND.tips;
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array([...t.thumb, 0, ...t.index, 0, ...t.middle, 0, ...t.tunnel, 0]), 3));
+  g.setAttribute('aIdx', new THREE.BufferAttribute(new Float32Array([0, 1, 2, 3]), 1));
+  const p = new THREE.Points(g, glowMat);
+  p.frustumCulled = false;
+  handGroup.add(p);
+}
+
+/* ambient dust (pixel space) */
+const dustMat = new THREE.ShaderMaterial({ ...BASE_MAT, vertexShader: DUST_VS, fragmentShader: DUST_FS, uniforms: { uTime: U.time, uColor: { value: C.teal.clone() }, uOpacity: { value: 0 } } });
+{
+  const n = 170, pos = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) pos.set([rand(), rand(), rand()], i * 3);
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const p = new THREE.Points(g, dustMat);
+  p.frustumCulled = false;
+  scene2d.add(p);
+}
+
+/* ------------------------------------------------------------------ clips */
+const CLIPS = [
+  { id: 'typing', src: 'assets/clips/01-typing.mp4', slot: 0, t0: 0.0, t1: 4.4, c0: 0.0 },
+  { id: 'scan', src: 'assets/clips/02-scan.mp4', slot: 1, t0: 3.85, t1: 7.65, c0: 0.35 },
+  { id: 'swelling', src: 'assets/clips/03-swelling.mp4', slot: 0, t0: 16.45, t1: 22.25, c0: 2.3 },
+  { id: 'nerve', src: 'assets/clips/04-nerve.mp4', slot: 1, t0: 21.85, t1: 25.7, c0: 2.0 },
+  { id: 'relief', src: 'assets/clips/05-relief.mp4', slot: 0, t0: 29.75, t1: 38.4, c0: 0.0 },
+];
+const CLIP_FPS = 24, CLIP_FRAMES = 192;
+const clipDefaults = { op: 0, s: 1, ox: 0, oy: 0, fx: 0.5, fy: 0.5, exp: 1, sat: 1, con: 1, tint: [1, 1, 1], tintAmt: 0, split: 0 };
+for (const c of CLIPS) {
+  c.p = { ...clipDefaults };
+  const v = document.createElement('video');
+  v.src = c.src; v.muted = true; v.playsInline = true; v.preload = 'auto'; v.crossOrigin = 'anonymous';
+  v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+  c.video = v;
+  c.tex = new THREE.VideoTexture(v);
+  c.tex.colorSpace = THREE.NoColorSpace; // decoded to linear in the shader
+  c.lastFrame = -1;
+}
+
+// Seek to the middle of clip frame f and resolve only once that exact frame has been decoded
+// and presented (requestVideoFrameCallback reports its mediaTime), so the texture upload
+// can never pick up the previous frame.
+function seekVideo(v, f) {
+  return new Promise((resolve) => {
+    let seeked = false, shown = !('requestVideoFrameCallback' in v), done = false, guard = 0;
+    const finish = () => { if (!done && seeked && shown) { done = true; clearTimeout(guard); resolve(); } };
+    const onFrame = (now, meta) => {
+      if (done) return;
+      if (Math.round(meta.mediaTime * CLIP_FPS) === f) { shown = true; finish(); } else v.requestVideoFrameCallback(onFrame);
+    };
+    if (!shown) v.requestVideoFrameCallback(onFrame);
+    v.addEventListener('seeked', () => { seeked = true; finish(); }, { once: true });
+    // safety net only (never drives animation): report and continue if a frame callback is lost
+    guard = setTimeout(() => { if (!done) { done = true; console.warn(`seek guard: ${v.src} frame ${f}`); resolve(); } }, 4000);
+    v.currentTime = (f + 0.5) / CLIP_FPS;
+  });
+}
+async function syncClips(t) {
+  const waits = [];
+  for (const c of CLIPS) {
+    const active = t >= c.t0 && t <= c.t1 && c.p.op > 0.001;
+    c.active = active;
+    const ct = c.c0 + (t - c.t0);
+    if (RENDER) {
+      if (!active) continue;
+      const f = Math.max(0, Math.min(CLIP_FRAMES - 1, Math.floor(ct * CLIP_FPS + 1e-6)));
+      if (f !== c.lastFrame) {
+        c.lastFrame = f;
+        const shown = Math.floor(c.video.currentTime * CLIP_FPS + 1e-6);
+        if (shown !== f || c.video.readyState < 2) waits.push(seekVideo(c.video, f));
+      }
+    } else {
+      const v = c.video;
+      if (active) {
+        const target = Math.min(ct, 8 - 0.05);
+        if (v.paused && ct < 8 - 0.05) { v.currentTime = target; v.play().catch(() => {}); }
+        else if (Math.abs(v.currentTime - target) > 0.2 && ct < 8 - 0.05) v.currentTime = target;
+      } else if (!v.paused) v.pause();
+    }
+  }
+  await Promise.all(waits);
+  for (const c of CLIPS) if (c.active) c.tex.needsUpdate = true;
+}
+
+/* ------------------------------------------------------------------ final composite */
+const blankTex = new THREE.DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1);
+blankTex.needsUpdate = true;
+const FINAL_FS = /* glsl */`
+precision highp float;
+uniform sampler2D tFx; uniform sampler2D tA; uniform sampler2D tB;
+uniform vec4 uAx; uniform vec4 uAg; uniform vec3 uAt; uniform vec2 uAf;
+uniform vec4 uBx; uniform vec4 uBg; uniform vec3 uBt; uniform vec2 uBf;
+uniform float uFrame; uniform float uGlitch; uniform float uShadeTop; uniform float uShadeBot; uniform float uVig;
+uniform vec3 uGlowCol; uniform float uGlow; uniform vec2 uGlowPos; uniform float uGrid; uniform float uFade;
+uniform float uFlash; uniform vec2 uFlashPos; uniform vec3 uFlashCol; uniform float uFxGain;
+varying vec2 vUv;
+
+float hash12(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
+vec3 toLin(vec3 c){ return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(0.04045, c)); }
+vec3 toSrgb(vec3 c){ c = max(c, 0.0); return mix(c * 12.92, 1.055 * pow(c, vec3(1.0 / 2.4)) - 0.055, step(0.0031308, c)); }
+
+vec3 plate(sampler2D tex, vec2 uv, vec4 xf, vec4 gr, vec3 tint, vec2 foc) {
+  if (xf.x <= 0.001) return vec3(0.0);
+  vec2 p = (uv - foc) / xf.y + foc - xf.zw;
+  if (p.x < 0.0 || p.x > 1.0 || p.y < 0.0 || p.y > 1.0) return vec3(0.0);
+  vec2 px = vec2(1.0 / 720.0, 1.0 / 1280.0);
+  vec3 c = toLin(texture2D(tex, p).rgb);
+  vec3 n = toLin(texture2D(tex, p + vec2(px.x, 0.0)).rgb) + toLin(texture2D(tex, p - vec2(px.x, 0.0)).rgb)
+         + toLin(texture2D(tex, p + vec2(0.0, px.y)).rgb) + toLin(texture2D(tex, p - vec2(0.0, px.y)).rgb);
+  c = max(c + (c - n * 0.25) * 0.5, 0.0);           // light unsharp mask for the 720p -> 1080p upscale
+  c *= gr.x;                                          // exposure
+  float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
+  c = mix(vec3(l), c, gr.y);                          // saturation
+  float tl = max(dot(tint, vec3(0.2126, 0.7152, 0.0722)), 1e-3);
+  c = mix(c, c * tint / tl, gr.w);                    // hue tint, luminance kept
+  c = 0.18 * pow(c / 0.18 + 1e-5, vec3(gr.z));        // contrast around mid grey
+  return c;
+}
+
+vec3 sceneAt(vec2 uv) {
+  // background: deep blue-black, a soft glow behind the hero and a faint HUD dot grid
+  vec3 bg = mix(vec3(0.0015, 0.004, 0.006), vec3(0.004, 0.012, 0.016), uv.y);
+  vec2 gd = (uv - uGlowPos) * vec2(1.0, 1.7778);
+  bg += uGlowCol * uGlow * exp(-dot(gd, gd) * 5.5) * 0.07;
+  vec2 gp = fract(uv * vec2(30.0, 53.333)) - 0.5;
+  bg += vec3(0.02, 0.09, 0.09) * uGrid * smoothstep(0.09, 0.0, length(gp * vec2(1.0, 1.0)));
+  vec3 c = bg;
+  vec3 a = plate(tA, uv, uAx, uAg, uAt, uAf);
+  c = mix(c, a, uAx.x);
+  vec3 b = plate(tB, uv, uBx, uBg, uBt, uBf);
+  c = mix(c, b, uBx.x);
+  // legibility shades for type (top / bottom)
+  c *= 1.0 - uShadeTop * smoothstep(0.6, 0.95, uv.y) * 0.82;
+  c *= 1.0 - uShadeBot * smoothstep(0.42, 0.06, uv.y) * 0.82;
+  c += texture2D(tFx, uv).rgb * uFxGain;
+  vec2 fd = (uv - uFlashPos) * vec2(1.0, 1.7778);
+  c += uFlashCol * uFlash * exp(-dot(fd, fd) * 22.0) * 0.7;
+  return c;
+}
+
+vec3 shoulder(vec3 c) {
+  // hue-preserving soft roll-off: the brightest channel never clips, so glows stay coloured instead of burning to white
+  float m = max(max(c.r, c.g), c.b);
+  float k = 0.7, L = 0.955;
+  if (m > k) { float nm = k + (L - k) * (1.0 - exp(-(m - k) / (L - k))); c *= nm / m; }
+  return c;
+}
+
+void main() {
+  vec2 uv = vUv;
+  vec3 c;
+  if (uGlitch > 0.001) {
+    float fr = uFrame;
+    float rows = 14.0 + floor(hash12(vec2(fr, 1.7)) * 26.0);
+    float band = floor(uv.y * rows);
+    float h = hash12(vec2(band, fr));
+    float on = step(1.0 - 0.5 * uGlitch, h);
+    uv.x += on * (hash12(vec2(band, fr + 7.0)) - 0.5) * 0.16 * uGlitch;
+    uv.y += (hash12(vec2(fr, 3.1)) - 0.5) * 0.012 * uGlitch;
+    float o = 0.009 * uGlitch * (0.6 + hash12(vec2(fr, 9.0)));
+    c = vec3(sceneAt(uv + vec2(o, 0.0)).r, sceneAt(uv).g, sceneAt(uv - vec2(o, 0.0)).b);
+    c *= 1.0 - 0.18 * uGlitch * step(0.5, fract(gl_FragCoord.y / 4.0));
+  } else {
+    c = sceneAt(uv);
+  }
+  vec2 vd = (vUv - 0.5) * vec2(1.0, 1.25);
+  c *= mix(1.0, smoothstep(0.95, 0.25, length(vd)), uVig);
+  c = shoulder(c) * uFade;
+  vec3 s = toSrgb(c);
+  s += (hash12(gl_FragCoord.xy + uFrame * 17.31) - 0.5) * 0.028;  // film grain, seeded by frame number
+  gl_FragColor = vec4(clamp(s, 0.0, 1.0), 1.0);
+}`;
+const finalMat = new THREE.ShaderMaterial({
+  vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
+  fragmentShader: FINAL_FS,
+  depthTest: false, depthWrite: false,
+  uniforms: {
+    tFx: { value: null }, tA: { value: blankTex }, tB: { value: blankTex },
+    uAx: { value: new THREE.Vector4() }, uAg: { value: new THREE.Vector4(1, 1, 1, 0) }, uAt: { value: new THREE.Vector3(1, 1, 1) }, uAf: { value: new THREE.Vector2(0.5, 0.5) },
+    uBx: { value: new THREE.Vector4() }, uBg: { value: new THREE.Vector4(1, 1, 1, 0) }, uBt: { value: new THREE.Vector3(1, 1, 1) }, uBf: { value: new THREE.Vector2(0.5, 0.5) },
+    uFrame: { value: 0 }, uGlitch: { value: 0 }, uShadeTop: { value: 0 }, uShadeBot: { value: 0 }, uVig: { value: 0.6 },
+    uGlowCol: { value: C.teal.clone() }, uGlow: { value: 0 }, uGlowPos: { value: new THREE.Vector2(0.5, 0.45) }, uGrid: { value: 0 }, uFade: { value: 1 },
+    uFlash: { value: 0 }, uFlashPos: { value: new THREE.Vector2(0.5, 0.5) }, uFlashCol: { value: C.red.clone() }, uFxGain: { value: 1 },
+  },
+});
+const finalQuad = new FullScreenQuad(finalMat);
+
+/* ------------------------------------------------------------------ animated state */
+const S = {
+  fade: 0, vig: 0.62, shadeTop: 0, shadeBot: 0, glitch: 0, glow: 0, glowRed: 0, grid: 0, fxGain: 1,
+  model: 0, scanZ: -8.5, scanOp: 0, skinSurf: 0,
+  narrow: 0, swell: 0, squash: 0, red: 0, pulse: 0, sig: 0, sigDraw: 0, jam: 0,
+  cam: { yaw: -42, pitch: 17, dist: 26, tx: -0.2, ty: 0.15, tz: -0.6, shift: 90 },
+  hand: 0, hFill: 0, hPart: 0, tipT: 0, tipI: 0, tipM: 0, tipTun: 0,
+  dust: 0, calm: 0, flash: 0, numb: 0, rings: 0,
+};
+const P = Object.fromEntries(CLIPS.map((c) => [c.id, c.p]));
+Object.assign(P.typing, { exp: 0.82, sat: 0.78, con: 1.06, tint: [0.75, 0.93, 1.0], tintAmt: 0.35, s: 1.0 });
+Object.assign(P.scan, { exp: 0.95, sat: 0.95, con: 1.05, tint: [0.8, 1, 0.98], tintAmt: 0.15, s: 1.02 });
+Object.assign(P.swelling, { exp: 0.6, sat: 1.0, con: 1.12, s: 1.14, oy: 0.075 });
+Object.assign(P.nerve, { exp: 0.85, sat: 0.88, con: 1.08, tint: [0.85, 0.95, 1], tintAmt: 0.12, s: 1.04, oy: 0.03 });
+Object.assign(P.relief, { exp: 0.6, sat: 0.82, con: 1.12, tintAmt: 0.32, s: 1.12, oy: 0.05 });
+
+/* ------------------------------------------------------------------ timeline */
+const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out', duration: 0.8 } });
+const wordsIn = (els, at, o = {}) => tl.fromTo(els,
+  { autoAlpha: 0, yPercent: o.y ?? 65, scale: o.scale ?? 1, filter: `blur(${o.blur ?? 14}px)` },
+  { autoAlpha: 1, yPercent: 0, scale: 1, filter: 'blur(0px)', duration: o.dur ?? 0.9, ease: o.ease ?? 'expo.out', stagger: o.stagger ?? 0.09 }, at);
+const wordsOut = (els, at, o = {}) => tl.to(els,
+  { autoAlpha: 0, yPercent: o.y ?? -50, filter: `blur(${o.blur ?? 10}px)`, duration: o.dur ?? 0.42, ease: o.ease ?? 'power3.in', stagger: o.stagger ?? 0.03 }, at);
+const fadeIn = (els, at, o = {}) => tl.fromTo(els, { autoAlpha: 0, y: o.y ?? 24 }, { autoAlpha: 1, y: 0, duration: o.dur ?? 0.7, ease: o.ease ?? 'power3.out', stagger: o.stagger ?? 0 }, at);
+const fadeOut = (els, at, o = {}) => tl.to(els, { autoAlpha: 0, y: o.y ?? -16, duration: o.dur ?? 0.4, ease: 'power3.in', stagger: o.stagger ?? 0 }, at);
+// stroke-draw: every stroked path has pathLength="1" and dasharray 1, so dashoffset 1 -> 0 draws it.
+// The dash values live in SVG attributes and are tweened with the attr plugin (GSAP's CSS route
+// does not interpolate stroke-dashoffset on these elements, it just snaps at the halfway point).
+$$('svg [pathLength]').forEach((el) => { el.setAttribute('stroke-dasharray', '1'); el.setAttribute('stroke-dashoffset', '1'); });
+const draw = (els, at, dur = 0.8, stagger = 0.08, ease = 'power2.inOut') => {
+  // round caps would show a dot at a zero-length dash, so each stroke stays hidden until its draw begins
+  tl.fromTo(els, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.12, ease: 'none', stagger }, at);
+  tl.fromTo(els, { attr: { 'stroke-dashoffset': 1 } }, { attr: { 'stroke-dashoffset': 0 }, duration: dur, ease, stagger }, at);
+};
+const u = (mats) => mats.map((m) => m.uniforms.uDraw);
+const eyebrowIn = (sel, at) => {
+  const el = $(sel + ' .eyebrow');
+  tl.fromTo($('.bar', el), { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: 'expo.out' }, at);
+  wordsIn($$('.w', el), at + 0.05, { y: 40, blur: 8, dur: 0.7 });
+};
+const eyebrowOut = (sel, at) => { const el = $(sel + ' .eyebrow'); fadeOut([el], at, { dur: 0.35 }); };
+
+// hide every block that is built later (avoids a flash of un-animated text)
+gsap.set(['#clock', '#chap', '.lbl', '.flbl', '.pill', '.chip', '.tip', '#end .c', '#end .halo', '#end .ring'], { autoAlpha: 0 });
+
+/* --- 1 · hook (0 - 4 s) */
+tl.fromTo(S, { fade: 0.3 }, { fade: 1, duration: 0.4, ease: 'power2.out' }, 0);
+tl.fromTo(P.typing, { op: 0.5 }, { op: 1, duration: 0.4, ease: 'power2.out' }, 0);
+tl.fromTo(P.typing, { s: 1.0 }, { s: 1.12, duration: 4.4, ease: 'none' }, 0);
+tl.fromTo(S, { shadeTop: 0.9, shadeBot: 0.2 }, { shadeTop: 0.9, shadeBot: 0.2, duration: 0.01 }, 0);
+fadeIn('#clock', 0.15, { y: -20 });
+const hookWords = W$('#hook');
+wordsIn([hookWords[0]], 0.32, { y: 50, scale: 1.18, blur: 20, dur: 1.0 });
+wordsIn([hookWords[1]], 0.74, { y: 50, scale: 1.18, blur: 20, dur: 1.0 });
+wordsIn([hookWords[2]], 1.16, { y: 50, scale: 1.18, blur: 20, dur: 1.0 });
+wordsIn([hookWords[3]], 1.5, { y: 50, scale: 1.18, blur: 20, dur: 1.0 });
+tl.fromTo('#hook', { scale: 1 }, { scale: 1.035, duration: 2.2, ease: 'none', transformOrigin: '100% 50%' }, 1.4);
+tl.to(S, { numb: 1, duration: 0.5, ease: 'power2.out' }, 1.75);
+tl.to(S, { numb: 0, duration: 0.3 }, 3.3);
+wordsOut(hookWords, 3.38, { stagger: 0.05 });
+fadeOut('#clock', 3.4);
+// hook -> anatomy: a scan line sweeps up and the scan clip takes over
+tl.fromTo('#sweep', { y: 1960, autoAlpha: 0 }, { y: -40, autoAlpha: 1, duration: 0.55, ease: 'power2.inOut' }, 3.78);
+tl.to('#sweep', { autoAlpha: 0, duration: 0.15 }, 4.25);
+tl.to(P.typing, { op: 0, duration: 0.32, ease: 'power2.in' }, 3.95);
+tl.fromTo(P.scan, { op: 0 }, { op: 1, duration: 0.3, ease: 'power2.out' }, 3.88);
+tl.fromTo(P.scan, { s: 1.02 }, { s: 1.07, duration: 2.8, ease: 'none' }, 3.88);
+
+/* --- 2 · anatomy (4 - 12 s) */
+tl.to(S, { shadeTop: 0.35, shadeBot: 0.9, duration: 0.6 }, 4.0);
+tl.fromTo('#chap', { autoAlpha: 0, y: -16 }, { autoAlpha: 1, y: 0, duration: 0.7 }, 4.15);
+eyebrowIn('#scanText', 4.3);
+wordsIn(W$('#scanText p:nth-of-type(1)'), 4.5);
+wordsIn(W$('#scanText p:nth-of-type(2)'), 4.85);
+wordsOut(W$('#scanText p'), 6.55);
+eyebrowOut('#scanText', 6.6);
+// push into the wrist and dissolve into the hologram
+tl.to(P.scan, { s: 1.55, fy: 0.5, duration: 0.8, ease: 'expo.in' }, 6.65);
+tl.to(P.scan, { op: 0, duration: 0.45, ease: 'power2.in' }, 7.15);
+tl.to(S, { shadeTop: 0.0, shadeBot: 0.0, duration: 0.6 }, 6.9);
+tl.to(S, { glitch: 0.35, duration: 0.08, ease: 'none' }, 7.12);
+tl.to(S, { glitch: 0, duration: 0.18, ease: 'power2.out' }, 7.2);
+tl.fromTo(S, { model: 0 }, { model: 1, duration: 0.5, ease: 'power2.out' }, 6.95);
+tl.to(S, { glow: 1, grid: 1, dust: 0.8, duration: 1.0 }, 7.0);
+tl.fromTo(S, { scanOp: 0 }, { scanOp: 1, duration: 0.25 }, 6.95);
+tl.fromTo(S, { scanZ: -8.5 }, { scanZ: 1.45, duration: 1.5, ease: 'power2.inOut' }, 6.95);
+tl.to(S, { scanOp: 0, duration: 0.4 }, 8.35);
+tl.to(u(M.skinLines), { value: 1, duration: 0.9, stagger: 0.02, ease: 'power2.inOut' }, 7.0);
+M.boneLines.forEach((ls, i) => tl.to(u(ls), { value: 1, duration: 0.9, stagger: 0.04, ease: 'power2.inOut' }, 7.35 + i * 0.1));
+tl.to(u(M.ligLines), { value: 1, duration: 0.85, stagger: 0.04, ease: 'power2.inOut' }, 7.9);
+tl.to(u(M.tendSurf), { value: 1, duration: 1.0, stagger: 0.06, ease: 'power2.inOut' }, 8.3);
+tl.to(M.tendRings.map((r) => r.userData.mats[0].uniforms.uDraw), { value: 1, duration: 0.5, stagger: 0.05, ease: 'power2.inOut' }, 8.95);
+tl.to(M.nerveSurf.uniforms.uDraw, { value: 1, duration: 1.0, ease: 'power2.inOut' }, 9.0);
+tl.to(M.nerveRingMat.uniforms.uDraw, { value: 1, duration: 0.5, ease: 'power2.inOut' }, 9.8);
+tl.to(S, { sig: 1, duration: 0.6 }, 9.6);
+tl.fromTo(S, { sigDraw: 0 }, { sigDraw: 1, duration: 1.0, ease: 'power2.inOut' }, 9.0);
+// camera drifts round the slice
+tl.fromTo(S.cam, { yaw: -42, pitch: 17, dist: 26 }, { yaw: -30, pitch: 13, dist: 23.5, duration: 5.2, ease: 'power1.inOut' }, 6.9);
+eyebrowIn('#anaHead', 7.3);
+wordsIn(W$('#anaHead .title'), 7.45, { scale: 1.12, blur: 18 });
+wordsIn(W$('#anaHead .sub'), 7.85, { y: 40, blur: 8, stagger: 0.05, dur: 0.7 });
+const labelIn = (id, at) => {
+  draw([`#ld-${id} path`], at, 0.45, 0, 'power2.out');
+  tl.fromTo(`#ld-${id} circle`, { attr: { r: 0 } }, { attr: { r: 7 }, duration: 0.35, ease: 'back.out(3)' }, at);
+  tl.fromTo(`#lb-${id}`, { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.45, ease: 'power3.out' }, at + 0.3);
+  wordsIn(W$(`#lb-${id} .kt`), at + 0.32, { y: 40, blur: 6, dur: 0.55, stagger: 0.05 });
+};
+gsap.set('#lb-ner .tag', { autoAlpha: 0 });
+labelIn('bone', 8.35);
+labelIn('lig', 8.95);
+labelIn('ten', 9.55);
+labelIn('ner', 10.15);
+
+/* --- 3 · why (12 - 22 s) */
+wordsOut(W$('#anaHead .title, #anaHead .sub'), 11.8);
+eyebrowOut('#anaHead', 11.85);
+for (const id of ['bone', 'lig', 'ten']) {
+  tl.to(`#ld-${id} path`, { attr: { 'stroke-dashoffset': -1 }, duration: 0.4, ease: 'power2.in' }, 11.8);
+  tl.to(`#ld-${id} circle`, { attr: { r: 0 }, duration: 0.3 }, 11.9);
+  tl.to(`#lb-${id}`, { autoAlpha: 0, scale: 0.92, duration: 0.3, ease: 'power2.in' }, 11.8);
+}
+eyebrowIn('#whyHead', 12.1);
+wordsIn(W$('#whyHead .line:nth-of-type(1)'), 12.35);
+tl.to(S, { narrow: 1, duration: 1.3, ease: 'power3.inOut' }, 12.3);
+tl.to(S.cam, { yaw: -16, pitch: 9, dist: 17, tx: -0.05, ty: 0.35, tz: 0.2, shift: 150, duration: 3.6, ease: 'power3.inOut' }, 12.0);
+wordsIn(W$('#whyHead .line:nth-of-type(2)'), 13.45);
+tl.to(S, { swell: 1, duration: 1.3, ease: 'power3.inOut' }, 13.4);
+wordsIn(W$('#whyHead .line:nth-of-type(3)'), 14.55);
+tl.to(S, { squash: 1, duration: 0.9, ease: 'power3.inOut' }, 14.5);
+tl.to(S, { red: 1, duration: 0.8, ease: 'power2.inOut' }, 14.6);
+tl.to(S, { pulse: 1, jam: 1, glowRed: 1, duration: 0.6 }, 15.0);
+tl.to('#lb-ner', { borderColor: 'rgba(255,61,87,.55)', duration: 0.4 }, 14.7);
+tl.fromTo('#lb-ner .tag', { autoAlpha: 0, x: 20 }, { autoAlpha: 1, x: 0, duration: 0.5, ease: 'back.out(2)' }, 14.95);
+// pressure arrows on the ligament and the bone walls
+tl.fromTo(['#ar0', '#ar1', '#ar2', '#ar3'], { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, stagger: 0.06 }, 12.35);
+tl.to(['#ar0', '#ar1', '#ar2', '#ar3'], { autoAlpha: 0, duration: 0.3 }, 14.3);
+tl.to(S, { rings: 1, duration: 0.3 }, 15.0);
+// out of the diagram, into the swelling clip with the causes
+wordsOut(W$('#whyHead .line'), 16.25, { stagger: 0.02 });
+eyebrowOut('#whyHead', 16.3);
+tl.to(['#lb-ner', '#ld-ner'], { autoAlpha: 0, duration: 0.3 }, 16.25);
+tl.to(S, { rings: 0, duration: 0.3 }, 16.25);
+tl.to(S, { glitch: 0.6, duration: 0.07, ease: 'none' }, 16.45);
+tl.to(S, { glitch: 0, duration: 0.25, ease: 'power2.out' }, 16.55);
+tl.to(S, { model: 0, sig: 0, glow: 0.4, grid: 0.3, duration: 0.3 }, 16.45);
+tl.fromTo(P.swelling, { op: 0 }, { op: 1, duration: 0.3 }, 16.45);
+tl.fromTo(P.swelling, { s: 1.14 }, { s: 1.22, duration: 5.8, ease: 'none' }, 16.45);
+tl.to(S, { shadeTop: 0.7, shadeBot: 0.95, duration: 0.5 }, 16.45);
+eyebrowIn('#causeHead', 16.75);
+wordsIn(W$('#causeHead .line'), 16.9, { stagger: 0.07 });
+tl.fromTo('#causes .spine', { scaleY: 0 }, { scaleY: 1, duration: 3.2, ease: 'power2.inOut' }, 17.1);
+$$('#causes .chip').forEach((chip, i) => {
+  const at = 17.3 + i * 0.6;
+  tl.fromTo(chip, { autoAlpha: 0, x: 70 }, { autoAlpha: 1, x: 0, duration: 0.7, ease: 'expo.out' }, at);
+  draw($$('.ic svg > *', chip), at + 0.1, 0.7, 0.07);
+  wordsIn($$('.t .w', chip), at + 0.12, { y: 45, blur: 8, dur: 0.65, stagger: 0.07 });
+  fadeIn($('.s', chip), at + 0.35, { y: 14, dur: 0.6 });
+});
+// the clip's nerve flash, coloured red
+tl.fromTo(S, { flash: 0 }, { flash: 1, duration: 0.25, ease: 'power2.out' }, 20.1);
+tl.to(S, { flash: 0.35, duration: 0.7, ease: 'power2.inOut' }, 20.4);
+tl.to(S, { flash: 0, duration: 0.5 }, 21.4);
+tl.to('#causes .chip', { autoAlpha: 0, x: -40, duration: 0.35, ease: 'power3.in', stagger: 0.04 }, 21.45);
+tl.to('#causes .spine', { autoAlpha: 0, duration: 0.3 }, 21.5);
+wordsOut(W$('#causeHead .line'), 21.5);
+eyebrowOut('#causeHead', 21.55);
+
+/* --- 4 · symptoms (22 - 30 s) */
+tl.to(S, { glitch: 0.85, duration: 0.06, ease: 'none' }, 21.86);
+tl.to(S, { glitch: 0.3, duration: 0.1, ease: 'none' }, 21.98);
+tl.to(S, { glitch: 0.7, duration: 0.05, ease: 'none' }, 22.08);
+tl.to(S, { glitch: 0, duration: 0.18, ease: 'power2.out' }, 22.14);
+tl.to(P.swelling, { op: 0, duration: 0.12 }, 21.95);
+tl.fromTo(P.nerve, { op: 0 }, { op: 1, duration: 0.12 }, 21.92);
+tl.fromTo(P.nerve, { s: 1.04 }, { s: 1.12, duration: 3.8, ease: 'none' }, 21.9);
+tl.to(S, { shadeTop: 0.8, shadeBot: 0.25, glow: 0, grid: 0, duration: 0.4 }, 21.95);
+eyebrowIn('#symHead', 22.15);
+wordsIn(W$('#symHead .title'), 22.3, { scale: 1.12, blur: 18 });
+wordsIn(W$('#symHead .sub'), 22.85, { y: 40, blur: 8, stagger: 0.06, dur: 0.7 });
+// glitch into the neon hand
+tl.to(S, { glitch: 0.9, duration: 0.05, ease: 'none' }, 25.3);
+tl.to(S, { glitch: 0.4, duration: 0.08, ease: 'none' }, 25.38);
+tl.to(S, { glitch: 0, duration: 0.22, ease: 'power2.out' }, 25.48);
+tl.to(P.nerve, { op: 0, duration: 0.1 }, 25.4);
+tl.to(S, { hand: 1, glow: 0.8, glowRed: 1, grid: 0.6, dust: 0.6, shadeTop: 0.0, shadeBot: 0.0, duration: 0.15 }, 25.38);
+tl.fromTo(HM.outline.uniforms.uDraw, { value: 0 }, { value: 1, duration: 1.0, ease: 'power2.inOut' }, 25.4);
+tl.fromTo(HM.outerGlow.uniforms.uDraw, { value: 0 }, { value: 1, duration: 1.0, ease: 'power2.inOut' }, 25.4);
+tl.to(S, { hFill: 1, duration: 0.8 }, 25.8);
+tl.to(u(HM.bones), { value: 1, duration: 0.6, stagger: 0.015, ease: 'power2.out' }, 25.6);
+tl.to(u(HM.band), { value: 1, duration: 0.5, stagger: 0.1, ease: 'power2.out' }, 25.8);
+tl.to(u(Object.values(HM.nerves)), { value: 1, duration: 0.75, stagger: 0.06, ease: 'power2.inOut' }, 25.95);
+tl.fromTo(hpMat.uniforms.uDraw, { value: 0 }, { value: 1, duration: 0.75, ease: 'power2.inOut' }, 25.95);
+tl.to(S, { hPart: 1, tipTun: 1, duration: 0.5 }, 26.05);
+tl.to(S, { tipT: 1, duration: 0.4 }, 26.5);
+tl.to(S, { tipI: 1, duration: 0.4 }, 26.65);
+tl.to(S, { tipM: 1, duration: 0.4 }, 26.8);
+tl.fromTo('#fl-thumb', { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: 'back.out(2.2)' }, 26.55);
+tl.fromTo('#fl-index', { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: 'back.out(2.2)' }, 26.7);
+tl.fromTo('#fl-middle', { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: 'back.out(2.2)' }, 26.85);
+tl.to(S, { glitch: 0.45, duration: 0.04, ease: 'none' }, 27.05);
+tl.to(S, { glitch: 0, duration: 0.12 }, 27.1);
+tl.fromTo('#symFoot .pill', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: 'expo.out', stagger: 0.55 }, 27.55);
+tl.to(S, { glitch: 0.35, duration: 0.04, ease: 'none' }, 28.75);
+tl.to(S, { glitch: 0, duration: 0.1 }, 28.8);
+// out
+wordsOut(W$('#symHead .title, #symHead .sub'), 29.4);
+eyebrowOut('#symHead', 29.45);
+tl.to(['#fl-thumb', '#fl-index', '#fl-middle', '#symFoot .pill'], { autoAlpha: 0, duration: 0.3, stagger: 0.03 }, 29.4);
+tl.to(S, { hand: 0, hPart: 0, tipT: 0, tipI: 0, tipM: 0, tipTun: 0, glow: 0, grid: 0, duration: 0.45, ease: 'power2.in' }, 29.6);
+
+/* --- 5 · solution (30 - 40 s) */
+tl.fromTo(P.relief, { op: 0 }, { op: 1, duration: 0.45, ease: 'power2.out' }, 29.8);
+tl.fromTo(P.relief, { s: 1.12 }, { s: 1.2, duration: 8.4, ease: 'none' }, 29.75);
+tl.to(S, { shadeTop: 0.85, shadeBot: 0.9, duration: 0.5 }, 29.8);
+eyebrowIn('#solHead', 30.15);
+wordsIn(W$('#solHead .title'), 30.3, { scale: 1.12, blur: 18 });
+// the clip's nerve turns blue at ~2.4 s: everything calms down with it
+tl.to(S, { calm: 1, duration: 1.4, ease: 'power2.inOut' }, 31.9);
+tl.to(S, { dust: 0.7, duration: 1.0 }, 32.2);
+$$('#tips .tip').forEach((tip, i) => {
+  const at = 32.65 + i * 1.2;
+  tl.fromTo(tip, { autoAlpha: 0, x: 80 }, { autoAlpha: 1, x: 0, duration: 0.75, ease: 'expo.out' }, at);
+  tl.fromTo($('.n', tip), { autoAlpha: 0, scale: 0.4 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: 'back.out(2.5)' }, at + 0.1);
+  draw($$('.ic svg > *', tip), at + 0.12, 0.75, 0.07);
+  wordsIn($$('.t .w', tip), at + 0.15, { y: 45, blur: 8, dur: 0.65, stagger: 0.07 });
+  fadeIn($('.s', tip), at + 0.4, { y: 14, dur: 0.6 });
+});
+tl.to('#tips .tip', { autoAlpha: 0, x: -50, duration: 0.4, ease: 'power3.in', stagger: 0.05 }, 36.95);
+wordsOut(W$('#solHead .title'), 37.0);
+eyebrowOut('#solHead', 37.05);
+tl.to('#chap', { autoAlpha: 0, duration: 0.4 }, 37.0);
+tl.to(P.relief, { op: 0, duration: 1.0, ease: 'power2.inOut' }, 37.2);
+tl.to(S, { shadeTop: 0, shadeBot: 0, glow: 1, grid: 0.5, duration: 1.0 }, 37.3);
+// end card
+tl.fromTo('#end .halo', { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 1.2, ease: 'expo.out' }, 37.5);
+tl.fromTo('#end .ring', { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 1.0, ease: 'expo.out' }, 37.6);
+draw($$('#end svg.big > *'), 37.6, 0.9, 0.12);
+wordsIn(W$('#end .a'), 38.0, { y: 50, blur: 10, stagger: 0.08 });
+wordsIn(W$('#end .b'), 38.3, { y: 60, scale: 1.1, blur: 16, stagger: 0.12 });
+fadeIn('#end .c', 38.95, { y: 16 });
+tl.set({}, {}, DURATION);
+
+/* ------------------------------------------------------------------ per-frame update (pure function of t) */
+const tmpV = new THREE.Vector3();
+const tmpC = new THREE.Color();
+const labelEls = Object.fromEntries(['bone', 'lig', 'ten', 'ner'].map((k) => [k, $('#lb-' + k)]));
+const leaderEls = Object.fromEntries(['bone', 'lig', 'ten', 'ner'].map((k) => [k, { path: $(`#ld-${k} path`), dot: $(`#ld-${k} circle`) }]));
+// label offset from the anchor (px): [dx, dy]; label sits left of the end point when dx < 0
+const LABELS = { bone: { side: -1, dy: 190 }, lig: { side: 1, dy: -190 }, ten: { side: 1, dy: 200 }, ner: { side: -1, dy: -170 } };
+const segEls = $$('#chap .segs b');
+const CHAPTERS = [[4, 12], [12, 22], [22, 30], [30, 37]];
+const fl = { thumb: $('#fl-thumb'), index: $('#fl-index'), middle: $('#fl-middle') };
+const ui = $('#ui');
+let labelSize = {};
+
+function project(v, group = model) {
+  tmpV.copy(v).applyMatrix4(group.matrixWorld).project(cam3d);
+  return [(tmpV.x * 0.5 + 0.5) * W, (-tmpV.y * 0.5 + 0.5) * H];
+}
+function sigSpeed(x) { return lerp(0.3, 0.09, smooth(14.4, 15.6, x)); }
+function travel(t) { let s = 0; const dt = 1 / 120; for (let x = 0; x < t; x += dt) s += sigSpeed(x + dt / 2) * Math.min(dt, t - x); return s; }
+const lerpColor = (a, b, k, out) => out.copy(a).lerp(b, k);
+
+// every material remembers its authored opacity; per-frame fades multiply it
+function setOp(m, k) {
+  if (m.userData.base === undefined) m.userData.base = m.uniforms.uOpacity.value;
+  m.uniforms.uOpacity.value = m.userData.base * k;
+}
+const MODEL_MATS = [...M.skinLines, ...M.boneSurf, ...M.boneLines.flat(), M.ligSurf, M.ligCap, ...M.ligLines, ...M.tendSurf, ...M.tendRings.flatMap((r) => r.userData.mats), M.nerveSurf, M.nerveCap];
+const TEAL_MATS = new Set([...M.skinLines, ...M.boneSurf, ...M.boneLines.flat(), M.ligSurf, M.ligCap, ...M.ligLines]);
+const HAND_MATS = [HM.outline, HM.outerGlow, ...HM.bones, ...HM.band, ...Object.values(HM.nerves)];
+
+function update(t) {
+  const frame = Math.round(t * FPS);
+  U.time.value = t;
+
+  /* camera */
+  const cm = S.cam;
+  const yaw = THREE.MathUtils.degToRad(cm.yaw), pitch = THREE.MathUtils.degToRad(cm.pitch);
+  const target = v3(cm.tx, cm.ty, cm.tz);
+  cam3d.position.set(
+    target.x + Math.sin(yaw) * Math.cos(pitch) * cm.dist,
+    target.y + Math.sin(pitch) * cm.dist,
+    target.z + Math.cos(yaw) * Math.cos(pitch) * cm.dist,
+  );
+  cam3d.lookAt(target);
+  cam3d.setViewOffset(W, H, 0, -cm.shift, W, H);
+  cam3d.updateMatrixWorld();
+
+  /* wrist model */
+  model.visible = S.model > 0.001;
+  const narrow = S.narrow;
+  boneGroup.scale.set(1 - 0.07 * narrow, 1 - 0.03 * narrow, 1);
+  boneGroup.position.y = 0.05 * narrow;
+  ligGroup.position.y = -0.17 * narrow;
+  ligGroup.scale.set(1 - 0.05 * narrow, 1 + 0.25 * narrow, 1);
+  tendGroup.scale.set(1 - 0.04 * narrow, 1 - 0.03 * narrow, 1);
+  U.swell.value = S.swell;
+  U.squash.value = S.squash;
+  U.scanZ.value = S.scanZ;
+  M.scan.position.z = S.scanZ;
+  M.scan.material.uniforms.uOpacity.value = S.scanOp * S.model;
+  for (const ring of M.tendRings) { const k = (ring.userData.r + 0.075 * S.swell * 0.84) / ring.userData.r; ring.scale.set(k, k, 1); }
+  M.nerveRing.scale.set(1 + 0.18 * S.squash, 1 - 0.47 * S.squash, 1);
+  { const k = S.swell; tendonColor.value.copy(C.teal).multiplyScalar((1 - k) * (1 - k)).add(tmpC.copy(C.ember).multiplyScalar(k * (2 - k) * 0.78)); }
+  lerpColor(C.white, C.red, S.red, nerveColor.value);
+  const pulse = S.pulse * (0.5 + 0.5 * Math.sin(t * 8.5));
+  M.nerveSurf.uniforms.uPulse.value = S.pulse;
+  const ligCol = M.ligSurf.uniforms.uColor.value;
+  lerpColor(C.cyan, C.ember, 0.3 * narrow * (1 - 0.3 * S.red), ligCol);
+  M.ligLines.forEach((m) => m.uniforms.uColor.value.copy(ligCol));
+  const mOp = S.model;
+  const calmDim = 1 - 0.4 * S.red;
+  for (const m of MODEL_MATS) setOp(m, mOp * (TEAL_MATS.has(m) ? calmDim : 1));
+  setOp(M.nerveRingMat, mOp * (1 + 0.9 * pulse));
+  // signals
+  sigMat.uniforms.uTravel.value = travel(t);
+  sigMat.uniforms.uJam.value = S.jam;
+  sigMat.uniforms.uDraw.value = S.sigDraw;
+  sigMat.uniforms.uOpacity.value = S.sig * mOp * (0.7 + 0.5 * pulse);
+  lerpColor(C.cyan, C.red, S.red, sigMat.uniforms.uColor.value);
+
+  /* neon hand */
+  handGroup.visible = S.hand > 0.001;
+  const hOp = S.hand;
+  HM.fill.uniforms.uOpacity.value = S.hFill * hOp;
+  for (const m of HAND_MATS) setOp(m, hOp);
+  const nPulse = 0.75 + 0.25 * Math.sin(t * 9.0);
+  for (const k of ['thumb', 'index', 'middle']) HM.nerves[k].uniforms.uOpacity.value *= nPulse;
+  hpMat.uniforms.uTravel.value = Math.max(0, t - 25.9) * 0.62;
+  hpMat.uniforms.uOpacity.value = S.hPart * hOp;
+  const tw = (k) => 0.7 + 0.3 * Math.sin(t * 11.0 + k * 2.1);
+  glowMat.uniforms.uI.value = [S.tipT * tw(0), S.tipI * tw(1), S.tipM * tw(2), S.tipTun * (0.55 + 0.45 * Math.sin(t * 7.0))].map((x) => x * hOp);
+
+  /* dust and background */
+  dustMat.uniforms.uOpacity.value = S.dust;
+  lerpColor(C.red, C.teal, S.calm, dustMat.uniforms.uColor.value);
+  if (t < 29) dustMat.uniforms.uColor.value.copy(C.teal).lerp(C.red, S.glowRed * 0.7);
+
+  /* clips -> slots */
+  const fu = finalMat.uniforms;
+  const slots = [[fu.tA, fu.uAx, fu.uAg, fu.uAt, fu.uAf], [fu.tB, fu.uBx, fu.uBg, fu.uBt, fu.uBf]];
+  for (const s of slots) { s[0].value = blankTex; s[1].value.set(0, 1, 0, 0); }
+  for (const c of CLIPS) {
+    if (!c.active) continue;
+    const p = c.p, s = slots[c.slot];
+    let tint = p.tint;
+    if (c.id === 'relief') tint = [lerp(1.0, 0.72, S.calm), lerp(0.62, 0.95, S.calm), lerp(0.58, 1.0, S.calm)];
+    s[0].value = c.tex;
+    s[1].value.set(p.op, p.s, p.ox, p.oy);
+    s[2].value.set(p.exp, p.sat, p.con, p.tintAmt);
+    s[3].value.set(...tint);
+    s[4].value.set(p.fx, p.fy);
+  }
+  fu.uFrame.value = frame;
+  fu.uGlitch.value = S.glitch;
+  fu.uShadeTop.value = S.shadeTop;
+  fu.uShadeBot.value = S.shadeBot;
+  fu.uVig.value = S.vig;
+  fu.uGlow.value = S.glow;
+  fu.uGrid.value = S.grid;
+  fu.uFade.value = S.fade;
+  fu.uFxGain.value = S.fxGain;
+  lerpColor(C.teal, C.red, S.glowRed * (1 - S.calm), fu.uGlowCol.value);
+  if (t > 37) fu.uGlowCol.value.copy(C.teal);
+  fu.uGlowPos.value.set(0.5, S.hand > 0.5 ? 0.47 : (t > 37 ? 0.6 : 0.42));
+  fu.uFlash.value = S.flash * (0.75 + 0.25 * Math.sin(t * 14.0));
+  fu.uFlashPos.value.set(0.5, 0.62);
+
+  /* DOM that follows the 3D model (labels, leaders, arrows, pulse rings) */
+  model.updateMatrixWorld(true);
+  const GROUP_OF = { bone: boneGroup, lig: ligGroup, ten: tendGroup, ner: model, ar0: ligGroup, ar1: ligGroup, ar2: boneGroup, ar3: boneGroup };
+  if (S.model > 0.001) {
+    for (const k of ['bone', 'lig', 'ten', 'ner']) {
+      const [ax, ay] = project(ANCHORS[k], GROUP_OF[k]);
+      const { side, dy } = LABELS[k];
+      const el = labelEls[k], sz = labelSize[k];
+      const ey = clamp(ay + dy, 640, 1660);
+      const lx = side < 0 ? 72 : W - 72 - sz.w;           // label box left edge
+      const endX = side < 0 ? lx + sz.w + 8 : lx - 8;      // leader meets the box here
+      const ex = ax + Math.sign(endX - ax) * Math.min(Math.abs(endX - ax) * 0.45, Math.abs(ey - ay) * 0.9);
+      const ld = leaderEls[k];
+      ld.path.setAttribute('d', `M${ax.toFixed(1)} ${ay.toFixed(1)} L${ex.toFixed(1)} ${ey.toFixed(1)} L${endX.toFixed(1)} ${ey.toFixed(1)}`);
+      ld.dot.setAttribute('cx', ax.toFixed(1));
+      ld.dot.setAttribute('cy', ay.toFixed(1));
+      el.style.left = `${lx.toFixed(1)}px`;
+      el.style.top = `${(ey - sz.h / 2).toFixed(1)}px`;
+    }
+    $('#ld-ner').classList.toggle('r', S.red > 0.5);
+    for (const [i, k] of ['ar0', 'ar1', 'ar2', 'ar3'].entries()) {
+      const [x, y] = project(ANCHORS[k], GROUP_OF[k]);
+      const bob = Math.sin(t * 7 + i) * 6 * (1 - narrow * 0.4);
+      const dx = i === 2 ? bob : i === 3 ? -bob : 0, dy = i < 2 ? bob - 10 : 0;
+      $('#' + k).setAttribute('transform', `translate(${(x + dx).toFixed(1)} ${(y + dy).toFixed(1)})`);
+    }
+    const [nx, ny] = project(ANCHORS.ner);
+    for (let i = 0; i < 3; i++) {
+      const ph = fract(t * 0.9 + i / 3);
+      const r = $('#pr' + i);
+      r.setAttribute('cx', nx.toFixed(1)); r.setAttribute('cy', ny.toFixed(1));
+      r.setAttribute('r', (20 + ph * 150).toFixed(1));
+      r.setAttribute('stroke-width', (5 * (1 - ph) + 0.5).toFixed(2));
+      r.style.opacity = (S.rings * (1 - ph) * 0.8).toFixed(3);
+    }
+  } else {
+    for (let i = 0; i < 3; i++) $('#pr' + i).style.opacity = 0;
+  }
+
+  /* finger labels */
+  const tipOff = { thumb: [44, -40], index: [26, -86], middle: [-34, -86] };
+  for (const k of ['thumb', 'index', 'middle']) {
+    const [x, y] = HAND.tips[k], el = fl[k];
+    const [ox, oy] = tipOff[k];
+    el.style.left = `${(x + ox - (k === 'middle' ? el.offsetWidth : 0)).toFixed(1)}px`;
+    el.style.top = `${(y + oy - el.offsetHeight / 2).toFixed(1)}px`;
+  }
+
+  /* chapter progress */
+  CHAPTERS.forEach(([a, b], i) => { segEls[i].style.transform = `scaleX(${clamp((t - a) / (b - a)).toFixed(4)})`; });
+
+  /* the numb word tingles (deterministic flicker) */
+  const n = S.numb;
+  const fk = 0.5 + 0.5 * Math.sin(t * 23.0) * Math.sin(t * 7.3 + 1.0);
+  numbInner.style.opacity = (1 - n * 0.5 * fk).toFixed(3);
+  numbInner.style.filter = `blur(${(n * 2.4 * fk).toFixed(2)}px)`;
+  numbInner.style.transform = `translateX(${(n * (hash1(frame) - 0.5) * 6).toFixed(2)}px)`;
+
+  /* DOM glitch follows the shader glitch */
+  const g = S.glitch;
+  if (g > 0.02) {
+    const jx = (hash1(frame * 3.1) - 0.5) * 34 * g, jy = (hash1(frame * 7.7) - 0.5) * 10 * g;
+    ui.style.transform = `translate(${jx.toFixed(1)}px, ${jy.toFixed(1)}px) skewX(${((hash1(frame) - 0.5) * 8 * g).toFixed(2)}deg)`;
+    ui.style.filter = `drop-shadow(${(-6 * g).toFixed(1)}px 0 0 rgba(255,40,80,.75)) drop-shadow(${(6 * g).toFixed(1)}px 0 0 rgba(40,255,230,.7))`;
+  } else {
+    ui.style.transform = '';
+    ui.style.filter = '';
+  }
+}
+
+function draw3() {
+  composer.render();
+  finalMat.uniforms.tFx.value = composer.readBuffer.texture;
+  renderer.setRenderTarget(null);
+  finalQuad.render(renderer);
+}
+
+/* ------------------------------------------------------------------ renderFrame(t): the only entry point */
+let renderChain = Promise.resolve();
+window.renderFrame = function renderFrame(t) {
+  t = clamp(+t || 0, 0, DURATION);
+  const job = renderChain.then(async () => {
+    tl.seek(t, false);      // the master timeline
+    gsap.updateRoot(t);     // anything living outside it
+    await syncClips(t);
+    update(t);
+    draw3();
+    return t;
+  });
+  renderChain = job.catch(() => {});
+  return job;
+};
+window.DURATION = DURATION;
+window.FPS = FPS;
+
+/* an ambient tween outside the master timeline (driven by gsap.updateRoot) */
+gsap.to('#chap .name i', { scale: 1.6, opacity: 0.45, duration: 0.9, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+gsap.to('#end .ring', { rotation: 360, duration: 14, repeat: -1, ease: 'none' });
+
+/* ------------------------------------------------------------------ boot */
+async function boot() {
+  window.__bootStage = 'fonts';
+  await Promise.all([
+    document.fonts.load('900 100px Vazirmatn', 'انگشتات'),
+    document.fonts.load('400 40px Vazirmatn', 'سلام 123'),
+  ]);
+  await document.fonts.ready;
+  window.__bootStage = 'clips';
+  await Promise.all(CLIPS.map((c) => new Promise((res, rej) => {
+    const v = c.video;
+    if (v.readyState >= 2) return res();
+    v.addEventListener('loadeddata', res, { once: true });
+    v.addEventListener('error', () => rej(new Error('clip failed: ' + c.src)), { once: true });
+    v.load();
+  })));
+  for (const k of Object.keys(labelEls)) { const el = labelEls[k]; labelSize[k] = { w: el.offsetWidth, h: el.offsetHeight }; }
+  window.__bootStage = 'compile';
+  renderer.compile(scene3d, cam3d);
+  renderer.compile(scene2d, cam2d);
+  window.__bootStage = 'first-frame';
+  await window.renderFrame(0);
+  window.__bootStage = 'ready';
+  window.__ready = true;
+}
+
+/* preview player (only without ?render): plays in real time and offers a replay button */
+function fit() {
+  const s = Math.min(innerWidth / W, innerHeight / H);
+  stage.style.transform = `translate(${((innerWidth - W * s) / 2).toFixed(1)}px, ${((innerHeight - H * s) / 2).toFixed(1)}px) scale(${s})`;
+}
+if (!RENDER) {
+  fit();
+  addEventListener('resize', fit);
+  const btn = $('#replay');
+  let start = 0, playing = false;
+  const loop = (now) => {
+    if (!playing) return;
+    const t = Math.min((now - start) / 1000, DURATION);
+    window.renderFrame(t);
+    if (t >= DURATION) { playing = false; CLIPS.forEach((c) => c.video.pause()); btn.style.display = 'flex'; return; }
+    requestAnimationFrame(loop);
+  };
+  const play = () => {
+    btn.style.display = 'none';
+    CLIPS.forEach((c) => { c.video.pause(); c.video.currentTime = c.c0; });
+    playing = true;
+    requestAnimationFrame((now) => { start = now; loop(now); });
+  };
+  btn.addEventListener('click', play);
+  boot().then(play).catch((e) => { console.error(e); });
+} else {
+  boot().catch((e) => { console.error(e); window.__bootError = String(e); });
+}
+</script>
+</body>
+</html>

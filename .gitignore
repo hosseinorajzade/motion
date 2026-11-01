@@ -11,3 +11,6 @@ Motions/
 # Remotion renders and generated audio
 remotion/out/
 __pycache__/
+
+# Carpal tunnel film: rendered frames, stills and logs (the delivered MP4 lives in carpal-tunnel/)
+carpal-tunnel/out/
