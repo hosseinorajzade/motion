@@ -1,12 +1,12 @@
 {
   "en": {
     "meta": {
-      "title": "Your Name — Motion Designer",
-      "description": "Portfolio of Your Name, a motion designer crafting 2D, 3D and logo animation for brands around the world.",
-      "projectTitle": "{project} — Your Name, Motion Designer"
+      "title": "Hossein Orajzade — Motion Designer",
+      "description": "Hossein Orajzade is a motion designer making 3D product films, kinetic typography and social content for brands like Daewoo and Art Radar.",
+      "projectTitle": "{project} — Hossein Orajzade, Motion Designer"
     },
-    "name": "Your Name",
-    "nameShort": "YN",
+    "name": "Hossein Orajzade",
+    "nameShort": "HO",
     "role": "Motion Designer",
     "langLabel": "فا",
     "langAria": "تغییر زبان به فارسی",
@@ -71,7 +71,7 @@
         "I'm a motion designer working across 3D product films, kinetic typography and social content, for brands like Daewoo and Art Radar.",
         "Most of what I make is built for the vertical screen: Reels, Stories and launch teasers that have to hold attention from the first frame."
       ],
-      "photoAlt": "Portrait of Your Name",
+      "photoAlt": "Portrait of Hossein Orajzade",
       "toolsTitle": "Tools I use"
     },
     "services": {
@@ -123,12 +123,12 @@
   },
   "fa": {
     "meta": {
-      "title": "نام شما — طراح موشن",
-      "description": "نمونه‌کارهای نام شما، طراح موشن؛ انیمیشن دوبعدی، سه‌بعدی و لوگوموشن برای برندها.",
-      "projectTitle": "{project} — نام شما، طراح موشن"
+      "title": "حسین اورج‌زاده — طراح موشن",
+      "description": "حسین اورج‌زاده، طراح موشن؛ فیلم سه‌بعدی محصول، تایپوگرافی متحرک و محتوای شبکه‌های اجتماعی برای برندهایی مثل دوو و آرت رادار.",
+      "projectTitle": "{project} — حسین اورج‌زاده، طراح موشن"
     },
-    "name": "نام شما",
-    "nameShort": "ن‌ش",
+    "name": "حسین اورج‌زاده",
+    "nameShort": "ح‌ا",
     "role": "طراح موشن",
     "langLabel": "EN",
     "langAria": "Switch language to English",
@@ -193,7 +193,7 @@
         "طراح موشن هستم و روی فیلم سه‌بعدی محصول، تایپوگرافی متحرک و محتوای شبکه‌های اجتماعی کار می‌کنم؛ برای برندهایی مثل دوو و آرت رادار.",
         "بیشتر کارهایم برای صفحه‌ی عمودی ساخته می‌شود: ریلز، استوری و تیزرهای معرفی که باید از اولین فریم توجه را نگه دارند."
       ],
-      "photoAlt": "پرتره‌ی نام شما",
+      "photoAlt": "پرتره‌ی حسین اورج‌زاده",
       "toolsTitle": "ابزارهای من"
     },
     "services": {
