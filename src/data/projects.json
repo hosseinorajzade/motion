@@ -1,7 +1,10 @@
 [
   {
     "id": "daewoo-charisma",
-    "title": { "en": "Daewoo Charisma", "fa": "دوو کاریزما" },
+    "title": {
+      "en": "Daewoo Charisma",
+      "fa": "دوو کاریزما"
+    },
     "description": {
       "en": "Launch teaser for the Daewoo Charisma washing machine. Neon-lit product shots and close-ups walk through the key features — A+++ energy grade, seven wash modes, Jet Shower and a 9 kg drum — with bilingual Persian and English typography, ending on the brand mark.",
       "fa": "تیزر معرفی ماشین لباسشویی دوو کاریزما. نماهای محصول در نور نئون و کلوزآپ‌ها ویژگی‌های اصلی را نشان می‌دهند — گرید انرژی +++A، هفت حالت شستشو، جت شاور و ظرفیت ۹ کیلوگرم — با تایپوگرافی دوزبانه‌ی فارسی و انگلیسی و پایانی روی لوگوی برند."
@@ -9,16 +12,28 @@
     "client": "Daewoo",
     "year": 2026,
     "category": "3D",
-    "tools": ["Cinema 4D", "Redshift", "After Effects"],
+    "tools": [
+      "Cinema 4D",
+      "Redshift",
+      "After Effects"
+    ],
     "orientation": "vertical",
+    "duration": 43,
     "thumbnail": "thumb.jpg",
     "previewVideo": "preview.mp4",
     "fullVideo": "full.mp4",
-    "gallery": ["still-1.jpg", "still-2.jpg", "still-3.jpg"]
+    "gallery": [
+      "still-1.jpg",
+      "still-2.jpg",
+      "still-3.jpg"
+    ]
   },
   {
     "id": "art-and-walk",
-    "title": { "en": "Art & Walk", "fa": "آرت اند واک" },
+    "title": {
+      "en": "Art & Walk",
+      "fa": "آرت اند واک"
+    },
     "description": {
       "en": "Kinetic-typography launch film for Art & Walk, a community by Art Radar that explores Dubai's art scene on foot. Bold type, soft colour fields and map graphics introduce the idea — art, our common language — and the first route through five galleries on Alserkal Avenue.",
       "fa": "فیلم معرفی با تایپوگرافی متحرک برای «آرت اند واک»، جامعه‌ای از آرت رادار برای کشف پیاده‌ی فضای هنری دبی. تایپ درشت، رنگ‌های نرم و گرافیک نقشه، ایده‌ی «هنر، زبان مشترک ما» و اولین مسیر از میان پنج گالری در خیابان السرکال را معرفی می‌کنند."
@@ -26,16 +41,27 @@
     "client": "Art Radar",
     "year": 2026,
     "category": "Typography",
-    "tools": ["After Effects", "Illustrator"],
+    "tools": [
+      "After Effects",
+      "Illustrator"
+    ],
     "orientation": "vertical",
+    "duration": 36,
     "thumbnail": "thumb.jpg",
     "previewVideo": "preview.mp4",
     "fullVideo": "full.mp4",
-    "gallery": ["still-1.jpg", "still-2.jpg", "still-3.jpg"]
+    "gallery": [
+      "still-1.jpg",
+      "still-2.jpg",
+      "still-3.jpg"
+    ]
   },
   {
     "id": "alserkal-walk",
-    "title": { "en": "Alserkal Avenue Walk", "fa": "پیاده‌روی السرکال" },
+    "title": {
+      "en": "Alserkal Avenue Walk",
+      "fa": "پیاده‌روی السرکال"
+    },
     "description": {
       "en": "Event invitation for an Art Radar gallery walk in cooperation with Vin.meet. Live footage of Alserkal Avenue blends into an animated isometric map that traces the route between The Third Line, Leila Heller, Efie, Carbon 12 and more — closing on the date, the meeting point and a call to register.",
       "fa": "دعوت‌نامه‌ی ویدیویی برای پیاده‌روی گالری‌گردی آرت رادار با همکاری Vin.meet. تصاویر واقعی خیابان السرکال به نقشه‌ی ایزومتریک متحرکی می‌رسند که مسیر میان گالری‌های تِرد لاین، لیلا هلر، افی، کربن ۱۲ و دیگران را دنبال می‌کند و با تاریخ، محل قرار و دعوت به ثبت‌نام تمام می‌شود."
@@ -43,16 +69,27 @@
     "client": "Art Radar × Vin.meet",
     "year": 2026,
     "category": "2D",
-    "tools": ["After Effects", "Illustrator"],
+    "tools": [
+      "After Effects",
+      "Illustrator"
+    ],
     "orientation": "vertical",
+    "duration": 29,
     "thumbnail": "thumb.jpg",
     "previewVideo": "preview.mp4",
     "fullVideo": "full.mp4",
-    "gallery": ["still-1.jpg", "still-2.jpg", "still-3.jpg"]
+    "gallery": [
+      "still-1.jpg",
+      "still-2.jpg",
+      "still-3.jpg"
+    ]
   },
   {
     "id": "social-cafe",
-    "title": { "en": "Social Café", "fa": "سوشال کافه" },
+    "title": {
+      "en": "Social Café",
+      "fa": "سوشال کافه"
+    },
     "description": {
       "en": "A short social ad for Social Café. A floating iced coffee waits in a sunlit cobblestone alley until a passing runner grabs it mid-stride — a ten-second loop built for Reels and Stories.",
       "fa": "تبلیغ کوتاه شبکه‌های اجتماعی برای سوشال کافه. یک آیس‌کافی معلق در کوچه‌ای سنگ‌فرش و آفتابی منتظر است تا دونده‌ای در حال دویدن آن را بردارد — لوپی ده‌ثانیه‌ای برای ریلز و استوری."
@@ -60,11 +97,18 @@
     "client": "Social Café",
     "year": 2026,
     "category": "Commercial",
-    "tools": ["After Effects"],
+    "tools": [
+      "After Effects"
+    ],
     "orientation": "vertical",
+    "duration": 10,
     "thumbnail": "thumb.jpg",
     "previewVideo": "preview.mp4",
     "fullVideo": "full.mp4",
-    "gallery": ["still-1.jpg", "still-2.jpg", "still-3.jpg"]
+    "gallery": [
+      "still-1.jpg",
+      "still-2.jpg",
+      "still-3.jpg"
+    ]
   }
 ]

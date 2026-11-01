@@ -1,13 +1,16 @@
 import { useRef } from 'react'
 import { useLanguage } from '../i18n/LanguageContext'
-import { isVertical, projectAsset, type Project } from '../data/projects'
+import { formatTimecode, isVertical, projectAsset, type Project } from '../data/projects'
 import { TransitionLink } from './Transition'
 import { LazyVideo } from './Video'
-import { ArrowUpRightIcon } from './Icons'
 import { useIsTouch } from '../hooks/useMediaQuery'
 import { getPerformanceTier } from '../lib/device'
 
-export function ProjectCard({ project, index }: { project: Project; index: number }) {
+/**
+ * A project as a clip on the timeline: the uncropped frame in its real
+ * aspect ratio, with its running time where an editor would look for it.
+ */
+export function ProjectCard({ project }: { project: Project }) {
   const { t, lang, num } = useLanguage()
   const video = useRef<HTMLVideoElement>(null)
   const isTouch = useIsTouch()
@@ -36,38 +39,48 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
         onBlur={stop}
         className="block"
       >
-        <div data-card-media className={`relative ${vertical ? 'aspect-[4/5]' : 'aspect-[4/3]'} overflow-hidden rounded-xl bg-line md:rounded-2xl`}>
+        <div className={`relative overflow-hidden rounded-lg bg-line ${vertical ? 'aspect-[9/16]' : 'aspect-video'}`}>
           <img
             src={projectAsset(project, project.thumbnail)}
             alt=""
             loading="lazy"
             decoding="async"
-            width={vertical ? 720 : 960}
-            height={vertical ? 900 : 720}
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1.4s] ease-expo group-hover:scale-105"
+            width={vertical ? 720 : 1280}
+            height={vertical ? 1280 : 720}
+            className="absolute inset-0 h-full w-full object-cover"
           />
           {project.previewVideo && (
             <LazyVideo
               ref={video}
               autoPlayInView={autoPreview}
               src={projectAsset(project, project.previewVideo)}
-              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${autoPreview ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'}`}
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${autoPreview ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'}`}
             />
           )}
-          <span className="absolute start-4 top-4 rounded-full bg-ink/60 px-3 py-1 text-xs text-paper backdrop-blur-md">{category}</span>
-          <span className="absolute bottom-4 end-4 grid h-11 w-11 scale-0 place-items-center rounded-full bg-accent text-ink transition-transform duration-500 ease-expo group-hover:scale-100">
-            <ArrowUpRightIcon className="h-5 w-5" />
-          </span>
+          {project.duration !== undefined && (
+            <span className="timecode absolute bottom-3 start-3 rounded bg-ink/70 px-2 py-1 text-xs text-paper backdrop-blur-sm" dir="ltr">
+              {num(formatTimecode(project.duration))}
+            </span>
+          )}
+          {/* Playhead: sweeps across the frame while the preview plays */}
+          <span
+            aria-hidden
+            className="absolute inset-y-0 start-0 w-px bg-accent opacity-0 group-hover:animate-[playhead_6s_linear_infinite] group-hover:opacity-100"
+          />
         </div>
-        <div className="mt-5 flex items-baseline justify-between gap-4">
-          <h3 className="font-display text-2xl font-medium tracking-tight md:text-3xl">
-            <span className="me-3 font-body text-sm text-muted">{num(String(index + 1).padStart(2, '0'))}</span>
-            {title}
-          </h3>
-          <span className="shrink-0 text-sm text-muted">
-            {project.client} · {num(project.year)}
+
+        <h3 className="mt-4 font-display text-xl font-semibold leading-tight transition-colors duration-300 group-hover:text-accent md:text-2xl">
+          {title}
+        </h3>
+        <p className="mt-1 flex flex-wrap justify-between gap-x-4 text-sm text-muted">
+          <span>
+            {project.client}
+            <span className="sr-only">, </span>
           </span>
-        </div>
+          <span className="shrink-0">
+            {category}, <span className="timecode">{num(project.year)}</span>
+          </span>
+        </p>
       </TransitionLink>
     </article>
   )

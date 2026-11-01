@@ -20,8 +20,7 @@ export function Contact() {
   return (
     <section id="contact" className="relative overflow-hidden border-t border-line">
       <div className="container-x pb-10 pt-28 md:pt-44">
-        <span className="eyebrow mb-6">{t.contact.eyebrow}</span>
-        <RevealText key={lang} as="h2" text={t.contact.title} className="display max-w-6xl text-[clamp(3rem,10vw,10rem)]" />
+        <RevealText key={lang} as="h2" text={t.contact.title} className="display max-w-6xl text-[clamp(2.5rem,7vw,7rem)]" />
         <p className="mt-8 max-w-lg text-lg text-paper/70">{t.contact.subtitle}</p>
 
         <div className="mt-16 flex flex-col gap-12 md:mt-24 md:flex-row md:items-center md:justify-between">
@@ -43,7 +42,7 @@ export function Contact() {
           </Magnetic>
 
           <div>
-            <h3 className="eyebrow mb-5">{t.contact.socialTitle}</h3>
+            <h3 className="mb-4 text-sm text-muted">{t.contact.socialTitle}</h3>
             <ul className="flex flex-wrap gap-3">
               {socials.map(({ key, Icon }) => (
                 <li key={key}>
@@ -70,16 +69,12 @@ export function Contact() {
         <span>
           © {num(new Date().getFullYear())} {t.name}. {t.footer.rights}
         </span>
-        <span>{t.footer.made}</span>
         <button onClick={() => scrollTo(0)} className="link-underline flex items-center gap-2 self-start text-paper md:self-auto">
           {t.footer.top}
           <ArrowUpIcon className="h-4 w-4" />
         </button>
       </footer>
 
-      <div aria-hidden className="pointer-events-none select-none overflow-hidden whitespace-nowrap text-center">
-        <span className="display -mb-[0.18em] block text-[22vw] leading-[0.8] text-outline opacity-40">{t.name}</span>
-      </div>
     </section>
   )
 }

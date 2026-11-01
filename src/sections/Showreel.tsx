@@ -36,7 +36,6 @@ export function Showreel() {
             { clipPath: 'inset(0% 0% 0% 0% round 0px)', ease: 'none' },
           )
           .fromTo('[data-reel-video]', { scale: 1.25 }, { scale: 1, ease: 'none' }, 0)
-          .fromTo('[data-reel-title]', { yPercent: 0 }, { yPercent: -60, opacity: 0, ease: 'none' }, 0)
           .fromTo('[data-reel-caption]', { autoAlpha: 0, y: 60 }, { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.35 }, 0.65)
       })
     }, section)
@@ -58,16 +57,12 @@ export function Showreel() {
         </button>
         <div data-reel-caption className="container-x pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between pb-8 md:pb-12">
           <div>
-            <span className="eyebrow mb-3 text-paper/80">{t.showreel.eyebrow}</span>
             <p className="display text-[clamp(2.5rem,8vw,7rem)]">{t.showreel.title}</p>
           </div>
           <span className="hidden text-sm text-paper/70 md:block">{t.showreel.hint}</span>
         </div>
       </div>
 
-      <div data-reel-title aria-hidden className="pointer-events-none absolute inset-x-0 top-[6%] text-center md:top-[4%]">
-        <span className="display text-[clamp(2rem,6vw,5rem)] text-outline">{t.showreel.eyebrow}</span>
-      </div>
 
       {open && <VideoModal url={site.showreel.full} poster={publicUrl(site.showreel.poster)} title={t.showreel.title} onClose={close} />}
     </section>

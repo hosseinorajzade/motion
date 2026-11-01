@@ -18,7 +18,7 @@ interface QualityProps {
 function readAccent() {
   const raw = getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim()
   const [r, g, b] = raw.split(/\s+/).map(Number)
-  return Number.isFinite(r) ? new THREE.Color(r / 255, g / 255, b / 255) : new THREE.Color('#ff4d2e')
+  return Number.isFinite(r) ? new THREE.Color(r / 255, g / 255, b / 255) : new THREE.Color('#4d7cff')
 }
 
 function Blob({ input, tier, reduced }: QualityProps & { input: Input }) {

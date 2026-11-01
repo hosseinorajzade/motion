@@ -6,14 +6,17 @@
    THEME — change colours here (space-separated RGB values)
    ------------------------------------------------------------------ */
 :root {
-  --color-ink: 10 10 11; /* background  #0a0a0b */
-  --color-paper: 240 237 230; /* main text   #f0ede6 */
-  --color-muted: 140 138 133; /* secondary   #8c8a85 */
-  --color-line: 38 38 40; /* borders     #262628 */
-  --color-accent: 255 77 46; /* accent      #ff4d2e */
+  /* "Timeline" palette: letterbox black, warm white, and the After Effects playhead blue */
+  --color-ink: 0 0 0; /* background  #000000 */
+  --color-paper: 237 235 230; /* main text   #edebe6 */
+  --color-muted: 142 142 150; /* secondary   #8e8e96 */
+  --color-line: 30 30 34; /* borders     #1e1e22 */
+  --color-accent: 77 124 255; /* playhead    #4d7cff */
 
-  --font-display: 'Space Grotesk Variable', 'Inter Variable', system-ui, sans-serif;
-  --font-body: 'Inter Variable', system-ui, sans-serif;
+  /* One family, two widths: expanded for titles, normal for reading */
+  --font-display: 'Archivo Variable', system-ui, sans-serif;
+  --font-body: 'Archivo Variable', system-ui, sans-serif;
+  --display-stretch: 125%;
 
   --gutter: clamp(1rem, 4vw, 3rem);
   color-scheme: dark;
@@ -22,6 +25,7 @@
 html[lang='fa'] {
   --font-display: 'Vazirmatn Variable', Tahoma, sans-serif;
   --font-body: 'Vazirmatn Variable', Tahoma, sans-serif;
+  --display-stretch: 100%;
 }
 
 @layer base {
@@ -56,17 +60,21 @@ html[lang='fa'] {
     padding-inline: var(--gutter);
   }
   .display {
-    @apply font-display font-medium leading-[0.92] tracking-tightest;
+    @apply font-display font-semibold leading-[0.95] tracking-[-0.03em];
+    font-stretch: var(--display-stretch);
   }
+  /* Small section marker: a keyframe diamond, as on an After Effects timeline */
   .eyebrow {
-    @apply flex items-center gap-3 font-body text-xs uppercase tracking-[0.2em] text-muted;
-  }
-  html[lang='fa'] .eyebrow {
-    @apply text-sm tracking-normal;
+    @apply flex items-center gap-2.5 font-body text-sm text-muted;
   }
   .eyebrow::before {
     content: '';
-    @apply inline-block h-1.5 w-1.5 rounded-full bg-accent;
+    @apply inline-block h-2 w-2 rotate-45 bg-accent;
+  }
+  /* Durations and years, set like a timecode readout */
+  .timecode {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
   }
   .link-underline {
     @apply relative;
@@ -110,17 +118,24 @@ html.lenis body {
   }
 }
 
-/* Film grain */
+/* Film grain: a viewport-sized frame; only the texture inside it moves (transform only,
+   so it never registers as a layout shift) */
 .grain {
   position: fixed;
-  inset: -100%;
-  width: 300%;
-  height: 300%;
+  inset: 0;
+  overflow: hidden;
   pointer-events: none;
   z-index: 80;
   opacity: 0.07;
+  contain: strict;
+}
+.grain::before {
+  content: '';
+  position: absolute;
+  inset: -100%;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain 0.9s steps(6) infinite;
+  will-change: transform;
 }
 @keyframes grain {
   0% { transform: translate(0, 0); }
@@ -162,7 +177,7 @@ html.lenis body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .grain {
+  .grain::before {
     animation: none;
   }
 }
@@ -170,4 +185,10 @@ html.lenis body {
 @keyframes scrollcue {
   0% { transform: translateY(-100%); }
   100% { transform: translateY(200%); }
+}
+
+/* Playhead sweep across a project card while its preview plays */
+@keyframes playhead {
+  from { inset-inline-start: 0%; }
+  to { inset-inline-start: 100%; }
 }

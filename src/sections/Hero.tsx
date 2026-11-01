@@ -24,7 +24,8 @@ export function Hero() {
   useEffect(() => {
     if (!quality.webgl || start3D) return
     const go = () => setStart3D(true)
-    const events = ['pointerdown', 'touchstart', 'scroll', 'keydown', 'pointermove'] as const
+    // Real input only — scripts (Lenis, ScrollTrigger) also fire 'scroll', which isn't the visitor
+    const events = ['pointerdown', 'touchstart', 'wheel', 'keydown', 'pointermove'] as const
     events.forEach((e) => window.addEventListener(e, go, { once: true, passive: true }))
     return () => events.forEach((e) => window.removeEventListener(e, go))
   }, [quality.webgl, start3D])
@@ -73,16 +74,7 @@ export function Hero() {
       )}
 
       <div ref={content} className="container-x pointer-events-none relative z-10 flex flex-1 flex-col justify-between pb-10 pt-32 md:pb-28 md:pt-40">
-        <div data-hero-fade className="flex items-start justify-between gap-6 text-sm text-muted">
-          <span className="eyebrow">{t.hero.eyebrow}</span>
-          <span className="hidden items-center gap-2 md:flex">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
-            </span>
-            {t.hero.available}
-          </span>
-        </div>
+        <p data-hero-fade className="eyebrow">{t.hero.available}</p>
 
         <div>
           <RevealText
@@ -92,7 +84,7 @@ export function Hero() {
             trigger="manual"
             play={loaded}
             delay={0.75}
-            className="display text-[clamp(3.6rem,15vw,15rem)]"
+            className="display text-[clamp(3rem,12vw,12.5rem)]"
           />
           <div className="mt-6 flex flex-col gap-8 md:mt-10 md:flex-row md:items-end md:justify-between">
             <p data-hero-fade className="font-display text-2xl font-light md:text-4xl">
@@ -109,12 +101,6 @@ export function Hero() {
         </div>
       </div>
 
-      <div data-hero-fade className="pointer-events-none absolute bottom-6 start-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-3 text-xs text-muted rtl:translate-x-1/2 md:flex">
-        <span>{t.hero.scroll}</span>
-        <span className="relative h-10 w-px overflow-hidden bg-line">
-          <span className="absolute inset-x-0 top-0 h-1/2 animate-[scrollcue_2s_ease-in-out_infinite] bg-paper" />
-        </span>
-      </div>
     </section>
   )
 }

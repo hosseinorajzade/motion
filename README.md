@@ -58,6 +58,8 @@ Adding a project takes one JSON entry and one folder. No code changes.
      "year": 2026,
      "category": "3D",
      "tools": ["Cinema 4D", "Redshift", "After Effects"],
+     "orientation": "vertical",
+     "duration": 43,
      "thumbnail": "thumb.jpg",
      "previewVideo": "preview.mp4",
      "fullVideo": "https://vimeo.com/123456789",
@@ -69,6 +71,8 @@ Notes:
 - File names are relative to `public/projects/<id>/`. Full `https://` URLs work too.
 - `fullVideo` can be a local file (`"full.mp4"`), a **YouTube** link or a **Vimeo** link. The type is detected automatically.
 - **Categories** are collected from your projects automatically. To translate a new category name, add it under `works.categories` in `src/i18n/content.json` for both languages, e.g. `"Character": "کاراکتر"`.
+- `orientation`: `"vertical"` for 9:16 work (Reels, Stories); leave it out for 16:9 films, which then span two columns.
+- `duration`: length in seconds, shown as a timecode (`00:43`) on the card and project page.
 - The order in the file is the order on the site.
 - Tip for preview videos: `ffmpeg -i in.mp4 -t 6 -vf scale=960:-2 -an -c:v libx264 -crf 28 -movflags +faststart preview.mp4`
 
@@ -90,7 +94,7 @@ Colours are space-separated RGB values so Tailwind opacity modifiers still work:
 
 ```css
 :root {
-  --color-accent: 255 77 46; /* #ff4d2e — change to e.g. 198 255 61 for #c6ff3d */
+  --color-accent: 77 124 255; /* #4d7cff (playhead blue) — e.g. 255 90 31 for #ff5a1f */
 }
 ```
 
@@ -195,6 +199,8 @@ npm run preview    # نمایش نسخه‌ی نهایی
   "year": 2026,
   "category": "3D",
   "tools": ["Cinema 4D", "After Effects"],
+  "orientation": "vertical",
+  "duration": 43,
   "thumbnail": "thumb.jpg",
   "previewVideo": "preview.mp4",
   "fullVideo": "https://www.youtube.com/watch?v=XXXXXXXXXXX",
@@ -207,6 +213,8 @@ npm run preview    # نمایش نسخه‌ی نهایی
 - نام فایل‌ها نسبت به پوشه‌ی `public/projects/<id>/` است.
 - `fullVideo` می‌تواند فایل محلی (`full.mp4`)، لینک **یوتیوب** یا لینک **ویمئو** باشد. نوع آن خودکار تشخیص داده می‌شود.
 - دسته‌بندی‌ها خودکار از روی پروژه‌ها ساخته می‌شوند. برای ترجمه‌ی دسته‌ی جدید، آن را در `works.categories` فایل `src/i18n/content.json` برای هر دو زبان اضافه کنید.
+- `orientation`: برای کارهای عمودی ۹:۱۶ (ریلز و استوری) مقدار `"vertical"` بگذارید؛ برای فیلم‌های افقی ۱۶:۹ آن را ننویسید.
+- `duration`: مدت ویدیو به ثانیه که به شکل تایم‌کد (`00:43`) نمایش داده می‌شود.
 - ترتیب پروژه‌ها در فایل همان ترتیب نمایش در سایت است.
 
 ### ۳. تغییر متن‌ها، لینک‌ها و رنگ‌ها
@@ -214,7 +222,7 @@ npm run preview    # نمایش نسخه‌ی نهایی
 - **همه‌ی متن‌ها** (نام، عنوان‌ها، بیوگرافی، خدمات، دکمه‌ها) به دو زبان: `src/i18n/content.json`
 - **ایمیل، شبکه‌های اجتماعی** (اینستاگرام، بیهنس، تلگرام، واتس‌اپ)، **شوریل**، عکس پرتره، فهرست ابزارها و نام مشتریان: `src/data/site.json`
 - **رنگ‌ها** (پس‌زمینه، متن، رنگ اصلی): متغیرهای `:root` در `src/index.css`. مقدارها به شکل RGB با فاصله نوشته می‌شوند، مثلاً `--color-accent: 255 77 46;`. صحنه‌ی سه‌بعدی هم رنگش را از همین متغیر می‌گیرد.
-- **فونت‌ها**: فونت فارسی Vazirmatn است و فونت‌های انگلیسی Space Grotesk و Inter. تنظیم آن‌ها در `src/index.css` و `src/main.tsx` است.
+- **فونت‌ها**: فونت فارسی Vazirmatn و فونت انگلیسی Archivo است. تنظیم آن‌ها در `src/index.css` و `src/main.tsx` است.
 - **عنوان و پیش‌نمایش شبکه‌های اجتماعی**: `index.html` و تصویر `public/og-image.png` با ابعاد ۱۲۰۰×۶۳۰.
 
 انتخاب زبان بازدیدکننده در مرورگر ذخیره می‌شود. در حالت فارسی، کل صفحه راست‌به‌چپ (RTL) می‌شود و جهت انیمیشن‌ها و آیکون‌ها هم برعکس می‌شود.

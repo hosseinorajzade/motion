@@ -109,7 +109,7 @@ void main(){
   vec3 l1 = normalize(vec3(-0.6, 0.8, 0.7));
   vec3 l2 = normalize(vec3(0.8, -0.4, 0.3));
   float diff = max(dot(n, l1), 0.0);
-  float spec = pow(max(dot(n, normalize(l1 + v)), 0.0), 80.0);
+  float spec = pow(max(dot(n, normalize(l1 + v)), 0.0), 140.0);
   float rim2 = pow(max(dot(n, l2), 0.0), 3.0);
 
   vec3 irid = 0.5 + 0.5 * cos(6.28318 * (vec3(0.0, 0.33, 0.67) + fres * 0.7 + vNoise * 0.8 + uTime * 0.02));
@@ -117,7 +117,7 @@ void main(){
   col += irid * fres * 0.28;
   col += uAccent * pow(fres, 1.3) * 1.15;
   col += uAccent * rim2 * 0.35;
-  col += vec3(1.0) * spec * 0.35;
+  col += vec3(1.0) * spec * 0.12;
   col += uAccent * smoothstep(0.15, 0.55, vNoise) * 0.12;
   gl_FragColor = vec4(col, 1.0);
 }

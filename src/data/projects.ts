@@ -13,6 +13,8 @@ export interface Project {
   tools: string[]
   /** "vertical" for 9:16 work (Reels, Stories); defaults to horizontal 16:9 */
   orientation?: 'vertical' | 'horizontal'
+  /** Length of the film in seconds, shown as a timecode on the card */
+  duration?: number
   /** File name inside public/projects/<id>/ or a full https:// URL */
   thumbnail: string
   previewVideo?: string
@@ -26,6 +28,10 @@ export const projects = raw as Project[]
 export const categories = Array.from(new Set(projects.map((p) => p.category)))
 
 export const isVertical = (p: Project) => p.orientation === 'vertical'
+
+/** 43 -> "00:43", 95 -> "01:35" */
+export const formatTimecode = (seconds: number) =>
+  [Math.floor(seconds / 60), Math.round(seconds % 60)].map((n) => String(n).padStart(2, '0')).join(':')
 
 export function getProject(id: string | undefined) {
   return projects.find((p) => p.id === id)
