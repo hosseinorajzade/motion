@@ -1,0 +1,29 @@
+{
+  "fps": 30,
+  "bpm": 120,
+  "beat": 15,
+  "bar": 60,
+  "durationInFrames": 1260,
+  "sections": [
+    { "id": "intro", "from": 0, "to": 120 },
+    { "id": "drop", "from": 120, "to": 240, "label": "Selected work", "fa": "کارهای منتخب" },
+    { "id": "card", "from": 240, "to": 300, "index": "01", "words": ["3D", "PRODUCT", "FILMS"], "fa": "فیلم محصول سه‌بعدی", "theme": "blue" },
+    { "id": "product", "from": 300, "to": 420, "label": "3D product films", "fa": "فیلم محصول سه‌بعدی" },
+    { "id": "card", "from": 420, "to": 480, "index": "02", "words": ["KINETIC", "TYPE"], "fa": "تایپوگرافی متحرک", "theme": "paper" },
+    { "id": "type", "from": 480, "to": 600, "label": "Kinetic typography", "fa": "تایپوگرافی متحرک" },
+    { "id": "card", "from": 600, "to": 660, "index": "03", "words": ["UI", "ANIMATION"], "fa": "موشن رابط کاربری", "theme": "ink" },
+    { "id": "ui", "from": 660, "to": 780, "label": "UI animation", "fa": "موشن رابط کاربری" },
+    { "id": "card", "from": 780, "to": 840, "index": "04", "words": ["SOCIAL", "& EVENTS"], "fa": "شبکه‌های اجتماعی و رویداد", "theme": "blue" },
+    { "id": "social", "from": 840, "to": 960, "label": "Social & events", "fa": "شبکه‌های اجتماعی و رویداد" },
+    { "id": "montage", "from": 960, "to": 1080, "label": "Everything moves", "fa": "همه‌چیز حرکت می‌کند" },
+    { "id": "outro", "from": 1080, "to": 1260 }
+  ],
+  "sfx": {
+    "riser": [[0, 118], [1020, 1078]],
+    "impact": [120, 1080],
+    "whoosh": [240, 420, 600, 780, 1150],
+    "tick": [24, 33, 42, 51, 60, 69, 78, 87, 96],
+    "flash": [108],
+    "chime": [1150]
+  }
+}

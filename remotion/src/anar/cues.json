@@ -1,0 +1,31 @@
+{
+  "fps": 30,
+  "bpm": 100,
+  "beat": 18,
+  "durationInFrames": 360,
+  "seeds": 110,
+  "events": {
+    "fallStart": 0,
+    "land": 24,
+    "burst": 36,
+    "swirl": 72,
+    "swirlSpread": 30,
+    "swirlDur": 26,
+    "skin": 118,
+    "crown": 132,
+    "fill": 144,
+    "glint": 152,
+    "slide": 180,
+    "letters": [
+      198,
+      205,
+      212,
+      219
+    ],
+    "fa": 228,
+    "tagline": 252,
+    "drip": 282,
+    "dripLand": 300,
+    "invert": 300
+  }
+}

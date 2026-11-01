@@ -8,6 +8,9 @@ import { prefersReducedMotion } from '../lib/device'
 
 const ALL = '__all'
 
+// Desktop columns for the vertical row, so a fifth clip doesn't sit alone on a second line
+const TALL_COLS: Record<number, string> = { 3: 'lg:grid-cols-3', 5: 'lg:grid-cols-5', 6: 'lg:grid-cols-3' }
+
 export function Works() {
   const { t, lang, num } = useLanguage()
   const [filter, setFilter] = useState(ALL)
@@ -60,7 +63,7 @@ export function Works() {
           <ProjectCard key={project.id} project={project} />
         ))}
         {tall.length > 0 && (
-          <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:gap-6 lg:grid-cols-4">
+          <div className={`grid grid-cols-2 gap-x-4 gap-y-10 md:gap-6 ${TALL_COLS[tall.length] ?? 'lg:grid-cols-4'}`}>
             {tall.map((project) => (
               <ProjectCard key={project.id} project={project} />
             ))}

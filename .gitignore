@@ -7,3 +7,7 @@ dist
 
 # Source videos (compressed copies live in public/projects)
 Motions/
+
+# Remotion renders and generated audio
+remotion/out/
+__pycache__/

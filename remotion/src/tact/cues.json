@@ -1,0 +1,57 @@
+{
+  "fps": 30,
+  "bpm": 120,
+  "beat": 15,
+  "durationInFrames": 600,
+  "shots": {
+    "macro": [
+      0,
+      120
+    ],
+    "explode": [
+      120,
+      240
+    ],
+    "ripple": [
+      240,
+      360
+    ],
+    "hero": [
+      360,
+      480
+    ],
+    "end": [
+      480,
+      600
+    ]
+  },
+  "events": {
+    "macroPress": 105,
+    "explodeOpen": 120,
+    "labels": [
+      138,
+      150,
+      162,
+      174
+    ],
+    "collapse": 228,
+    "impact": 240,
+    "ripples": [
+      {
+        "at": 244,
+        "from": "esc"
+      },
+      {
+        "at": 300,
+        "from": "enter"
+      }
+    ],
+    "rippleSpeed": 1.6,
+    "heroRiser": [
+      420,
+      478
+    ],
+    "titleHit": 360,
+    "endHit": 480
+  }
+}
