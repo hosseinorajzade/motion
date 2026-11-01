@@ -138,5 +138,62 @@
       "still-2.jpg",
       "still-3.jpg"
     ]
+  },
+  {
+    "id": "anar",
+    "title": {
+      "en": "Anar",
+      "fa": "انار"
+    },
+    "description": {
+      "en": "A bilingual logo animation for Anar, a concept brand of cold-pressed pomegranate juice. A single seed drops and bursts, the seeds spiral back into the fruit, and the mark settles into a lockup that reads in English and Persian: the Latin letters rise left to right while the Persian wordmark wipes in right to left. It closes on a drop that floods the frame into the inverted logo.",
+      "fa": "انیمیشن لوگوی دوزبانه برای «انار»، برند مفهومی آب انار سردفشرده. یک دانه‌ی انار می‌افتد و پخش می‌شود، دانه‌ها مارپیچ‌وار به میوه برمی‌گردند و نشانه به لوگویی می‌رسد که به فارسی و انگلیسی خوانده می‌شود: حروف لاتین از چپ به راست بالا می‌آیند و نوشته‌ی فارسی از راست به چپ ظاهر می‌شود. فیلم با قطره‌ای تمام می‌شود که کادر را پر می‌کند و نسخه‌ی معکوس لوگو را نشان می‌دهد."
+    },
+    "client": "Self-initiated",
+    "year": 2026,
+    "category": "Logo Animation",
+    "tools": [
+      "Remotion",
+      "React"
+    ],
+    "duration": 12,
+    "thumbnail": "thumb.jpg",
+    "previewVideo": "preview.mp4",
+    "fullVideo": "full.mp4",
+    "gallery": [
+      "still-1.jpg",
+      "still-2.jpg",
+      "still-3.jpg",
+      "still-4.jpg"
+    ]
+  },
+  {
+    "id": "tact-75",
+    "title": {
+      "en": "Tact 75",
+      "fa": "تکت ۷۵"
+    },
+    "description": {
+      "en": "Launch teaser for Tact 75, a concept 75% mechanical keyboard. A macro of the Escape key seating onto its switch, an exploded view of the five layers, a wave of 84 key presses rippling across the board and a hero turn in front of the title, scored with the keyboard's own sounds.",
+      "fa": "تیزر معرفی «تکت ۷۵»، کیبورد مکانیکی مفهومی ۷۵ درصدی. نمای ماکرو از نشستن کلید Esc روی سوییچ، نمای انفجاری از پنج لایه‌ی کیبورد، موجی از فشرده‌شدن ۸۴ کلید روی صفحه و چرخش نهایی محصول جلوی عنوان، با موسیقی‌ای که از صدای خود کلیدها ساخته شده است."
+    },
+    "client": "Self-initiated",
+    "year": 2026,
+    "category": "3D",
+    "tools": [
+      "Remotion",
+      "Three.js"
+    ],
+    "orientation": "vertical",
+    "duration": 20,
+    "thumbnail": "thumb.jpg",
+    "previewVideo": "preview.mp4",
+    "fullVideo": "full.mp4",
+    "gallery": [
+      "still-1.jpg",
+      "still-2.jpg",
+      "still-3.jpg",
+      "still-4.jpg"
+    ]
   }
 ]

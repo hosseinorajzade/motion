@@ -33,7 +33,7 @@ anar() {
   still $OUT/anar_picture.mp4 58 1280:720 $D/still-1.jpg
   still $OUT/anar_picture.mp4 106 1280:720 $D/still-2.jpg
   still $OUT/anar_picture.mp4 262 1280:720 $D/still-3.jpg
-  still $OUT/anar_picture.mp4 350 1280:720 $D/still-4.jpg
+  still $OUT/anar_picture.mp4 132 1280:720 $D/still-4.jpg
 }
 
 tact() {
@@ -45,7 +45,7 @@ tact() {
   still $OUT/tact_picture.mp4 440 720:1280 $D/thumb.jpg
   still $OUT/tact_picture.mp4 96 1080:1920 $D/still-1.jpg
   still $OUT/tact_picture.mp4 200 1080:1920 $D/still-2.jpg
-  still $OUT/tact_picture.mp4 272 1080:1920 $D/still-3.jpg
+  still $OUT/tact_picture.mp4 300 1080:1920 $D/still-3.jpg
   still $OUT/tact_picture.mp4 560 1080:1920 $D/still-4.jpg
 }
 
@@ -55,4 +55,4 @@ case "${1:-all}" in
   tact) tact ;;
   all) showreel; anar; tact ;;
 esac
-ls -la $PUB/showreel $PUB/projects/anar $PUB/projects/tact-75 2>/dev/null | grep -v "^total"
+ls -la $PUB/showreel $PUB/projects/anar $PUB/projects/tact-75 2>/dev/null | grep -v "^total" || true
