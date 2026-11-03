@@ -28,6 +28,32 @@
     ]
   },
   {
+    "id": "carpal-tunnel",
+    "title": {
+      "en": "Carpal Tunnel Syndrome",
+      "fa": "سندروم تونل کارپال"
+    },
+    "description": {
+      "en": "A Persian health explainer about carpal tunnel syndrome, cut for Reels. It opens on hands at a keyboard, scans into an X-ray wrist to show the narrow carpal tunnel with its nine tendons and the median nerve, shows how pressure on that nerve brings tingling, numbness and night pain to the thumb, index and middle fingers, and ends on simple prevention: a few minutes' rest every hour and gentle wrist stretches.",
+      "fa": "ویدیوی آموزشی سلامت درباره‌ی سندروم تونل کارپال برای ریلز. فیلم با دست‌هایی پشت کیبورد شروع می‌شود، با اسکن به نمای اشعه‌ی ایکس مچ می‌رسد و کانال باریک تونل کارپال را با نُه تاندون و عصب مدیان نشان می‌دهد، بعد توضیح می‌دهد فشار روی این عصب چطور باعث گزگز، بی‌حسی و درد شبانه در انگشت شست، اشاره و میانی می‌شود و با پیشگیری ساده تمام می‌شود: هر ساعت چند دقیقه استراحت و کشش ملایم مچ و انگشت‌ها."
+    },
+    "client": "Self-initiated",
+    "year": 2026,
+    "category": "Explainer",
+    "tools": [],
+    "orientation": "vertical",
+    "duration": 38,
+    "thumbnail": "thumb.jpg",
+    "previewVideo": "preview.mp4",
+    "fullVideo": "full.mp4",
+    "gallery": [
+      "still-1.jpg",
+      "still-2.jpg",
+      "still-3.jpg",
+      "still-4.jpg"
+    ]
+  },
+  {
     "id": "daewoo-charisma",
     "title": {
       "en": "Daewoo Charisma",

@@ -42,7 +42,7 @@ function ProjectDetail({ id }: { id: string }) {
     [t.project.year, num(project.year)],
     [t.project.category, category],
     ...(project.duration !== undefined ? [[t.project.duration, num(formatTimecode(project.duration))] as [string, string]] : []),
-    [t.project.tools, project.tools.join(', ')],
+    ...(project.tools.length > 0 ? [[t.project.tools, project.tools.join(', ')] as [string, string]] : []),
   ]
 
   return (
