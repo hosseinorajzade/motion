@@ -192,3 +192,18 @@ html.lenis body {
   from { inset-inline-start: 0%; }
   to { inset-inline-start: 100%; }
 }
+
+/* Showreel play button: two rings breathing out from the button */
+.reel-ping {
+  animation: reelping 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+.reel-ping-late {
+  animation-delay: 1.2s;
+}
+@keyframes reelping {
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reel-ping { animation: none; opacity: 0; }
+}
