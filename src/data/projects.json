@@ -28,6 +28,32 @@
     ]
   },
   {
+    "id": "daewoo-8-promises",
+    "title": {
+      "en": "Daewoo: 8 Promises",
+      "fa": "دوو: ۸ پیمان"
+    },
+    "description": {
+      "en": "A motion-graphics film for Daewoo's after-sales service. A red figure 8 opens the piece and walks through eight promises to customers in line icons and bold Persian type: round-the-clock support, a technician at your door within 48 hours, 100% original parts, free repairs under warranty, a six-month guarantee on every repair, respect, transparent pricing and follow-up until you're satisfied. The 8 then turns on its side into an infinity sign: a promise without end.",
+      "fa": "موشن‌گرافیک خدمات پس از فروش دوو. یک عدد ۸ قرمز فیلم را باز می‌کند و هشت پیمان با مشتریان را با آیکون‌های خطی و تایپوگرافی درشت فارسی مرور می‌کند: پاسخگویی شبانه‌روزی، حضور کارشناس در منزل ظرف ۴۸ ساعت، قطعات ۱۰۰٪ اصلی، تعمیر رایگان در دوره‌ی گارانتی، شش ماه ضمانت برای هر تعمیر، احترام، تعرفه‌ی شفاف و پیگیری تا رضایت کامل. در پایان، ۸ می‌خوابد و به نماد بی‌نهایت تبدیل می‌شود: پیمانی بی‌پایان."
+    },
+    "client": "Daewoo",
+    "year": 2026,
+    "category": "2D",
+    "tools": [],
+    "orientation": "vertical",
+    "duration": 45,
+    "thumbnail": "thumb.jpg",
+    "previewVideo": "preview.mp4",
+    "fullVideo": "full.mp4",
+    "gallery": [
+      "still-1.jpg",
+      "still-2.jpg",
+      "still-3.jpg",
+      "still-4.jpg"
+    ]
+  },
+  {
     "id": "carpal-tunnel",
     "title": {
       "en": "Carpal Tunnel Syndrome",

@@ -9,7 +9,7 @@ import { prefersReducedMotion } from '../lib/device'
 const ALL = '__all'
 
 // Desktop columns for the vertical row, so a fifth clip doesn't sit alone on a second line
-const TALL_COLS: Record<number, string> = { 3: 'lg:grid-cols-3', 5: 'lg:grid-cols-5', 6: 'lg:grid-cols-3' }
+const TALL_COLS: Record<number, string> = { 3: 'lg:grid-cols-3', 5: 'lg:grid-cols-5', 6: 'lg:grid-cols-3', 7: 'lg:grid-cols-4', 9: 'lg:grid-cols-3' }
 
 export function Works() {
   const { t, lang, num } = useLanguage()
