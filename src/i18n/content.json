@@ -35,7 +35,8 @@
     "showreel": {
       "eyebrow": "Showreel",
       "title": "Showreel",
-      "hint": "Click to watch"
+      "hint": "Watch the full reel with sound",
+      "play": "Play showreel"
     },
     "works": {
       "eyebrow": "Selected works",
@@ -158,7 +159,8 @@
     "showreel": {
       "eyebrow": "شوریل",
       "title": "شوریل",
-      "hint": "برای تماشا کلیک کنید"
+      "hint": "نسخه‌ی کامل را با صدا ببینید",
+      "play": "پخش شوریل"
     },
     "works": {
       "eyebrow": "نمونه‌کارهای منتخب",
