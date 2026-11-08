@@ -247,5 +247,33 @@
       "still-3.jpg",
       "still-4.jpg"
     ]
+  },
+  {
+    "id": "rootcanal",
+    "title": {
+      "en": "Root Canal Treatment",
+      "fa": "درمان ریشه (روت کانال)"
+    },
+    "description": {
+      "en": "A 3D medical animation demonstrating root canal therapy and endodontic treatment. Detailed anatomical visualization showcasing the step-by-step dental procedure with precision lighting and motion.",
+      "fa": "انیمیشن سه‌بعدی پزشکی و آموزشی نمایش فرآیند درمان ریشه‌ی دندان (عصب‌کشی). تصویرسازی دقیق آناتومی دندان و مراحل گام‌به‌گام جراحی همراه با نورپردازی و موشن واقع‌گرایانه."
+    },
+    "client": "Medical / Dental Motion",
+    "year": 2026,
+    "category": "3D",
+    "tools": [
+      "Cinema 4D",
+      "After Effects"
+    ],
+    "orientation": "vertical",
+    "duration": 31,
+    "thumbnail": "thumb.jpg",
+    "previewVideo": "preview.mp4",
+    "fullVideo": "full.mp4",
+    "gallery": [
+      "still-1.jpg",
+      "still-2.jpg",
+      "still-3.jpg"
+    ]
   }
 ]
