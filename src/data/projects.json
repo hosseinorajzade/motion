@@ -28,6 +28,32 @@
     ]
   },
   {
+    "id": "hidden-smile",
+    "title": {
+      "en": "Hidden Smile",
+      "fa": "لبخند پنهان"
+    },
+    "description": {
+      "en": "A 3D character ad for a dental clinic. It asks how many times you've hidden your smile: a young woman covers her mouth with friends and in a café, until a dentist tells her \"it's time.\" After treatment she laughs freely, and the film closes on \"no need to hide it anymore\" and a call to book an appointment.",
+      "fa": "تبلیغ کاراکتری سه‌بعدی برای یک کلینیک دندان‌پزشکی. فیلم می‌پرسد «چند بار لبخندت رو قایم کردی؟»: دختری جوان کنار دوستانش و در کافه دهانش را می‌پوشاند، تا اینکه دندان‌پزشک می‌گوید «وقتشه». بعد از درمان، آزادانه می‌خندد و فیلم با «دیگه لازم نیست قایمش کنی» و دعوت به رزرو نوبت تمام می‌شود."
+    },
+    "client": "Dental clinic",
+    "year": 2026,
+    "category": "Commercial",
+    "tools": [],
+    "orientation": "vertical",
+    "duration": 29,
+    "thumbnail": "thumb.jpg",
+    "previewVideo": "preview.mp4",
+    "fullVideo": "full.mp4",
+    "gallery": [
+      "still-1.jpg",
+      "still-2.jpg",
+      "still-3.jpg",
+      "still-4.jpg"
+    ]
+  },
+  {
     "id": "daewoo-8-promises",
     "title": {
       "en": "Daewoo: 8 Promises",
