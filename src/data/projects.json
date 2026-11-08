@@ -135,24 +135,24 @@
     ]
   },
   {
-    "id": "art-and-walk",
+    "id": "rootcanal",
     "title": {
-      "en": "Art & Walk",
-      "fa": "آرت اند واک"
+      "en": "Root Canal Treatment",
+      "fa": "درمان ریشه (روت کانال)"
     },
     "description": {
-      "en": "Kinetic-typography launch film for Art & Walk, a community by Art Radar that explores Dubai's art scene on foot. Bold type, soft colour fields and map graphics introduce the idea — art, our common language — and the first route through five galleries on Alserkal Avenue.",
-      "fa": "فیلم معرفی با تایپوگرافی متحرک برای «آرت اند واک»، جامعه‌ای از آرت رادار برای کشف پیاده‌ی فضای هنری دبی. تایپ درشت، رنگ‌های نرم و گرافیک نقشه، ایده‌ی «هنر، زبان مشترک ما» و اولین مسیر از میان پنج گالری در خیابان السرکال را معرفی می‌کنند."
+      "en": "A 3D medical animation demonstrating root canal therapy and endodontic treatment. Detailed anatomical visualization showcasing the step-by-step dental procedure with precision lighting and motion.",
+      "fa": "انیمیشن سه‌بعدی پزشکی و آموزشی نمایش فرآیند درمان ریشه‌ی دندان (عصب‌کشی). تصویرسازی دقیق آناتومی دندان و مراحل گام‌به‌گام جراحی همراه با نورپردازی و موشن واقع‌گرایانه."
     },
-    "client": "Art Radar",
+    "client": "Medical / Dental Motion",
     "year": 2026,
-    "category": "Typography",
+    "category": "3D",
     "tools": [
-      "After Effects",
-      "Illustrator"
+      "Cinema 4D",
+      "After Effects"
     ],
     "orientation": "vertical",
-    "duration": 36,
+    "duration": 31,
     "thumbnail": "thumb.jpg",
     "previewVideo": "preview.mp4",
     "fullVideo": "full.mp4",
@@ -275,24 +275,24 @@
     ]
   },
   {
-    "id": "rootcanal",
+    "id": "art-and-walk",
     "title": {
-      "en": "Root Canal Treatment",
-      "fa": "درمان ریشه (روت کانال)"
+      "en": "Art & Walk",
+      "fa": "آرت اند واک"
     },
     "description": {
-      "en": "A 3D medical animation demonstrating root canal therapy and endodontic treatment. Detailed anatomical visualization showcasing the step-by-step dental procedure with precision lighting and motion.",
-      "fa": "انیمیشن سه‌بعدی پزشکی و آموزشی نمایش فرآیند درمان ریشه‌ی دندان (عصب‌کشی). تصویرسازی دقیق آناتومی دندان و مراحل گام‌به‌گام جراحی همراه با نورپردازی و موشن واقع‌گرایانه."
+      "en": "Kinetic-typography launch film for Art & Walk, a community by Art Radar that explores Dubai's art scene on foot. Bold type, soft colour fields and map graphics introduce the idea — art, our common language — and the first route through five galleries on Alserkal Avenue.",
+      "fa": "فیلم معرفی با تایپوگرافی متحرک برای «آرت اند واک»، جامعه‌ای از آرت رادار برای کشف پیاده‌ی فضای هنری دبی. تایپ درشت، رنگ‌های نرم و گرافیک نقشه، ایده‌ی «هنر، زبان مشترک ما» و اولین مسیر از میان پنج گالری در خیابان السرکال را معرفی می‌کنند."
     },
-    "client": "Medical / Dental Motion",
+    "client": "Art Radar",
     "year": 2026,
-    "category": "3D",
+    "category": "Typography",
     "tools": [
-      "Cinema 4D",
-      "After Effects"
+      "After Effects",
+      "Illustrator"
     ],
     "orientation": "vertical",
-    "duration": 31,
+    "duration": 36,
     "thumbnail": "thumb.jpg",
     "previewVideo": "preview.mp4",
     "fullVideo": "full.mp4",
